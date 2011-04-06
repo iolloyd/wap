@@ -1,0 +1,12 @@
+all:
+    authorized_users:
+        lloyd: thesame
+        lionel: jefe
+        jason: london
+    secure_methods:
+        admin: 
+dev:
+    authorized_users:
+        user: pass 
+    secure_methods:
+        admin: 

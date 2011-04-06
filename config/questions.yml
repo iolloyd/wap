@@ -1,0 +1,41 @@
+all:
+    questions:
+        - question: Hoeveel provincies telt Nederland 
+          options: {11, 12, 13}
+          answer: 11 
+
+        - question: Welke is de hoofdstad van Nederland    
+          options: {Amsterdam, Rotterdam, "Den Haag"}
+          answer: Amsterdam 
+
+        - question: Wanneer werd Nederland bevrijd van de Duitsers         
+          options: {1942, 1944, 1945}
+          answer: 1945 
+
+        - question: Welke club won als eerste de Champions League         
+          options: {Ajax, Feyenoord, PSV}
+          answer: PSV 
+
+        - question: Welke andere benaming word gebruikt voor de Schiereilanden   
+          options: {Schiermonnikoog, ABC-eilanden, Waddeneilanden}
+          answer: Waddeneilanden 
+
+        - question: Wie is momenteel Minister-president in Nederland  
+          options: {Rutter, Bos, Kok}
+          answer: Rutter 
+
+        - question: Welke is de langste rivier van Nederland         
+          options: {Maas, "Noord Hollandskanaal", Rijn}
+          answer: Rijn
+
+        - question: Hoeveel Champion Leagues heeft Ajax op zijn naam staan         
+          options: {3, 4, 5}
+          answer: 3
+
+        - question: Welk gebouw is het hoogste van Nederland  
+          options: {Maastoren, "New Orleans", Delfstpoort}
+          answer: Delfstpoort 
+
+        - question: Welk van deze bieren is van Nederlandse afkomst     
+          options: {Coronita, Heineken, Duvel}
+          answer: Heineken 

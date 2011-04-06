@@ -1,0 +1,5 @@
+ab:
+    main/index:
+        - { layout: default, template: main/index,  weight: 1 }
+        - { layout: default, template: main/index, weight: 4 }
+

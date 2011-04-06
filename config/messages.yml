@@ -1,0 +1,25 @@
+all:
+    free: "SMS nu WIN AAN aan 4400 en maak kans op een IPAD 16GB! Info: Mega-quiz.nl Stoppen? WIN STOP aan 4400. Abonnement voor 3e/SMS 3 SMS/wk. Info:www.smsgc.nl"			
+
+    confirm: "Aanmeldbevestiging Bericht van mega-quiz.nl, abonnementsdienst. Kosten EUR9 / week, 3 berichten per week. Stoppen WIN STOP naar 4400.Info:mega-quiz.nl. info?"
+
+    stop: "Afmeldbevestiging We hebben je afmelding voor mega-quiz.nl ontvangen! Je ontvangt nu geen berichten meer van ons. Prettige dag verder.info? www.smsgc.nl"
+
+    wrong: "SMS-tekst indien de verkeerde tekst word gesmst Helaas, het door u verzonden bericht wordt niet herkend.  Kijk op mega-quiz.nl voor meer informatie. info? www.smsgc.nl"
+
+    forgotten: "Je wachtwoord: {PASSWORD}. Deze betalingsbevestiging is voor de toegang tot Mega-quiz.nl en kost Euro 3. Hulp of meer info? www.mega-quiz-nl. info? www.smsgc.nl"
+
+    billing: "Je wachtwoord: {PASSWORD}. Deze betalingsbevestiging is voor de toegang tot Mega-quiz.nl en kost Euro 3. Hulp of meer info? www.mega-quiz-nl. info? www.smsgc.nl"
+
+    billing1: "Je zit in de top 10. Speel opnieuw.Deze betalingsbevestiging is voor de toegang tot Mega-quiz.nl en kost Euro 3. Hulp of meer info? www.mega-quiz-nl. info? www.smsgc.nl"
+
+    billing2: "Speel opnieuw en win een IPAD.Deze betalingsbevestiging is voor de toegang tot Mega-quiz.nl en kost Euro 3. Hulp of meer info? www.mega-quiz-nl. info? www.smsgc.nl"
+
+    billing3: "Je bent finalist, speel opnieuw.Deze betalingsbevestiging is voor de toegang tot Mega-quiz.nl en kost Euro 3. Hulp of meer info? www.mega-quiz-nl. info? www.smsgc.nl"
+
+    billing4: "Verbeter je score, speel opnieuw.Deze betalingsbevestiging is voor de toegang tot Mega-quiz.nl en kost Euro 3. Hulp of meer info? www.mega-quiz-nl. info? www.smsgc.nl"
+
+    billing5: "Je bent lager dan #1, speel opnieuw.Deze betalingsbevestiging is voor de toegang tot Mega-quiz.nl en kost Euro 3. Hulp of meer info? www.mega-quiz-nl. info? www.smsgc.nl"
+
+    help: "10 vragen. De snelste wint een iPad. Abonnementsdienst voor EUR9/week3 SMS/WK. Info: Mega-quiz.nl. Stoppen? WIN STOP aan 4400. info? www.smsgc.nl"
+

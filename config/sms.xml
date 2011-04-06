@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.ipx.com/api/services/smsapi52" xmlns:typens="http://www.ipx.com/api/services/smsapi52/types" targetNamespace="http://www.ipx.com/api/services/smsapi52"> 
+    <types> 
+        <xsd:schema targetNamespace="http://www.ipx.com/api/services/smsapi52/types" elementFormDefault="qualified"> 
+            <xsd:element name="SendRequest"> 
+                <xsd:complexType> 
+                    <xsd:sequence> 
+                        <xsd:element name="correlationId" type="xsd:string"/> 
+                        <xsd:element name="originatingAddress" type="xsd:string"/> 
+                        <xsd:element name="originatorTON" type="xsd:int"/> 
+                        <xsd:element name="destinationAddress" type="xsd:string"/> 
+                        <xsd:element name="userData" type="xsd:string"/> 
+                        <xsd:element name="userDataHeader" type="xsd:string"/> 
+                        <xsd:element name="DCS" type="xsd:int"/> 
+                        <xsd:element name="PID" type="xsd:int"/> 
+                        <xsd:element name="relativeValidityTime" type="xsd:int"/> 
+                        <xsd:element name="deliveryTime" type="xsd:string"/> 
+                        <xsd:element name="statusReportFlags" type="xsd:int"/> 
+                        <xsd:element name="accountName" type="xsd:string"/> 
+                        <xsd:element name="tariffClass" type="xsd:string"/> 
+                        <xsd:element name="VAT" type="xsd:double"/> 
+                        <xsd:element name="referenceId" type="xsd:string"/> 
+                        <xsd:element name="serviceName" type="xsd:string"/> 
+                        <xsd:element name="serviceCategory" type="xsd:string"/> 
+                        <xsd:element name="serviceMetaData" type="xsd:string"/> 
+                        <xsd:element name="campaignName" type="xsd:string"/> 
+                        <xsd:element name="username" type="xsd:string"/> 
+                        <xsd:element name="password" type="xsd:string"/> 
+                    </xsd:sequence> 
+                </xsd:complexType> 
+            </xsd:element> 
+            <xsd:element name="SendResponse"> 
+                <xsd:complexType> 
+                    <xsd:sequence> 
+                        <xsd:element name="correlationId" type="xsd:string"/> 
+                        <xsd:element name="messageId" type="xsd:string"/> 
+                        <xsd:element name="responseCode" type="xsd:int"/> 
+                        <xsd:element name="reasonCode" type="xsd:int"/> 
+                        <xsd:element name="responseMessage" type="xsd:string"/> 
+                        <xsd:element name="temporaryError" type="xsd:boolean"/> 
+                        <xsd:element name="billingStatus" type="xsd:int"/> 
+                        <xsd:element name="VAT" type="xsd:double"/> 
+                    </xsd:sequence> 
+                </xsd:complexType> 
+            </xsd:element> 
+        </xsd:schema> 
+    </types> 
+    <message name="sendRequest"> 
+        <part name="request" element="typens:SendRequest"/> 
+    </message> 
+    <message name="sendResponse"> 
+        <part name="result" element="typens:SendResponse"/> 
+    </message> 
+    <portType name="SmsApiPort"> 
+        <operation name="send"> 
+            <input message="tns:sendRequest"/> 
+            <output message="tns:sendResponse"/> 
+        </operation> 
+    </portType> 
+    <binding name="SmsApiBinding" type="tns:SmsApiPort"> 
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/> 
+        <operation name="send"> 
+            <soap:operation soapAction="tns:#send"/> 
+            <input> 
+                <soap:body use="literal"/> 
+            </input> 
+            <output> 
+                <soap:body use="literal"/> 
+            </output> 
+        </operation> 
+    </binding> 
+    <service name="SmsApiService"> 
+        <port name="SmsApi52" binding="tns:SmsApiBinding"> 
+            <soap:address location="http://europe.ipx.com/api/services2/SmsApi52"/> 
+        </port> 
+    </service> 
+</definitions> 
+

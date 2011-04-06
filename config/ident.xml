@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.ipx.com/api/services/identificationapi30" xmlns:typens="http://www.ipx.com/api/services/identificationapi30/types" targetNamespace="http://www.ipx.com/api/services/identificationapi30">
+    <types>
+        <xsd:schema targetNamespace="http://www.ipx.com/api/services/identificationapi30/types" elementFormDefault="qualified">
+            <xsd:element name="CreateSessionRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="correlationId" type="xsd:string"/>
+                        <xsd:element name="returnURL" type="xsd:string"/>
+                        <xsd:element name="contentName" type="xsd:string"/>
+                        <xsd:element name="language" type="xsd:string"/>
+                        <xsd:element name="username" type="xsd:string"/>
+                        <xsd:element name="password" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="CreateSessionResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="correlationId" type="xsd:string"/>
+                        <xsd:element name="sessionId" type="xsd:string"/>
+                        <xsd:element name="redirectURL" type="xsd:string"/>
+                        <xsd:element name="responseCode" type="xsd:int"/>
+                        <xsd:element name="responseMessage" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="CheckStatusRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="correlationId" type="xsd:string"/>
+                        <xsd:element name="sessionId" type="xsd:string"/>
+                        <xsd:element name="username" type="xsd:string"/>
+                        <xsd:element name="password" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="CheckStatusResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="correlationId" type="xsd:string"/>
+                        <xsd:element name="statusCode" type="xsd:int"/>
+                        <xsd:element name="statusReasonCode" type="xsd:int"/>
+                        <xsd:element name="statusMessage" type="xsd:string"/>
+                        <xsd:element name="responseCode" type="xsd:int"/>
+                        <xsd:element name="responseMessage" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="FinalizeSessionRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="correlationId" type="xsd:string"/>
+                        <xsd:element name="sessionId" type="xsd:string"/>
+                        <xsd:element name="username" type="xsd:string"/>
+                        <xsd:element name="password" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="FinalizeSessionResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="correlationId" type="xsd:string"/>
+                        <xsd:element name="transactionId" type="xsd:string"/>
+                        <xsd:element name="consumerId" type="xsd:string"/>
+                        <xsd:element name="operator" type="xsd:string"/>
+                        <xsd:element name="responseCode" type="xsd:int"/>
+                        <xsd:element name="responseMessage" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:schema>
+    </types>
+    <message name="createSessionRequest">
+        <part name="request" element="typens:CreateSessionRequest"/>
+    </message>
+    <message name="createSessionResponse">
+        <part name="result" element="typens:CreateSessionResponse"/>
+    </message>
+    <message name="checkStatusRequest">
+        <part name="request" element="typens:CheckStatusRequest"/>
+    </message>
+    <message name="checkStatusResponse">
+        <part name="result" element="typens:CheckStatusResponse"/>
+    </message>
+    <message name="finalizeSessionRequest">
+        <part name="request" element="typens:FinalizeSessionRequest"/>
+    </message>
+    <message name="finalizeSessionResponse">
+        <part name="result" element="typens:FinalizeSessionResponse"/>
+    </message>
+    <portType name="IdentificationApiPort">
+        <operation name="createSession">
+            <input message="tns:createSessionRequest"/>
+            <output message="tns:createSessionResponse"/>
+        </operation>
+        <operation name="checkStatus">
+            <input message="tns:checkStatusRequest"/>
+            <output message="tns:checkStatusResponse"/>
+        </operation>
+        <operation name="finalizeSession">
+            <input message="tns:finalizeSessionRequest"/>
+            <output message="tns:finalizeSessionResponse"/>
+        </operation>
+    </portType>
+    <binding name="IdentificationApiBinding" type="tns:IdentificationApiPort">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="createSession">
+            <soap:operation soapAction="tns:createSession"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="checkStatus">
+            <soap:operation soapAction="tns:checkStatus"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="finalizeSession">
+            <soap:operation soapAction="tns:finalizeSession"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+    <service name="IdentificationApiService">
+        <port name="IdentificationApi30" binding="tns:IdentificationApiBinding">
+            <soap:address location="http://europe.ipx.com/api/services2/IdentificationApi30"/>
+        </port>
+    </service>
+</definitions>

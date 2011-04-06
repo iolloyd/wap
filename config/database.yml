@@ -1,0 +1,8 @@
+all:
+	host       : localhost
+	user       : root
+	pass       : root
+	database   : bosphore
+	persistent : true
+
+dev:

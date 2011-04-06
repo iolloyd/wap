@@ -1,0 +1,9 @@
+contact:
+    fields:
+        firstname: {label: First, type: string, length: 10, required: true}
+        lastname:  {label: Last, type: string, length: 10, required: true}
+        email:     {label: Your email, type: email, required: true}
+        comment:   {label: Comments, type: textarea, required: true}
+
+
+

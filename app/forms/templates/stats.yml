@@ -1,0 +1,7 @@
+stats:
+    fields:
+        start_date: {label: First, type: string, length: 10, required: true}
+        lastname:  {label: Last, type: string, length: 10, required: true}
+
+
+

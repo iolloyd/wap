@@ -1,0 +1,18 @@
+search:
+    fields:
+        firstname: {label: First, type: string, length: 10, required: true}
+        lastname:  {label: Last, type: string, length: 10, required: true}
+        age:       {label: Age, type: int,    length: 2}
+        email:     {label: Your email, type: email, required: true}
+
+        salutation: 
+            label: Saluthingy
+            view: select 
+            members: salutations
+
+        day_of_week: 
+            label: Weekday
+            view: select 
+            members: getDaysOfWeek
+
+

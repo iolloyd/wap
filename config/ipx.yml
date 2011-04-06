@@ -1,0 +1,34 @@
+all:
+    defaults:
+        campaignName         : "#NULL#"
+        correlationId        : IPX
+        clientIPAddress      : "#NULL#"
+        originatingAddress   : 4400
+        originatorTON        : 0
+        destinationAddress   : none
+        userData             : ""
+        userDataHeader       : "#NULL#"
+        DCS                  : -1 
+        PID                  : -1
+        relativeValidityTime : -1
+        deliveryTime         : "#NULL#"
+        statusReportFlags    : 1
+        accountName          : "#NULL#"
+        tariffClass          : EUR0
+        subscription_tariff  : EUR150
+        VAT                  : -1
+        referenceId          : "#NULL#"
+        serviceName          : "#NULL#"
+        serviceCategory      : "#NULL#"
+        serviceMetaData      : "#NULL#"
+        language             : "#NULL#"
+        username             : "one-nl"
+        password             : "R1bh5q6VYL"
+        returnURL            : "http://www.mega-quiz.nl/activate"
+        host_sms_api         : "sms.xml"
+        host_sub_api         : "sub.xml"
+        frequencyInterval    : 2
+        frequencyCount       : 1
+        eventCount           : -1
+        duration             : -1
+

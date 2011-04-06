@@ -1,0 +1,9 @@
+ul#admin_menu li {
+	display: inline;
+}
+.hidden {
+	display: none;
+}
+.confirm_success, .billing_success{
+	color:green;
+}

@@ -1,0 +1,7 @@
+translation:
+    fields:
+        label  : { label: Label  , type: string }
+        english: { label: English, type: string }
+        french : { label: French , type: string }
+        spanish: { label: Spanish, type: string }
+        italian: { label: Italian, type: string }
