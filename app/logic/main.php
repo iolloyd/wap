@@ -2,24 +2,24 @@
 class main extends controller {
 	var $layout = 'main';
 
-	public function createSubscription($request){
-		$phone = $_POST['phone'];
+	public function activatePost($request){
 
-		sub::createSubscription(array(
-			'consumerId'  => $phone,
-			'referenceId' => $msgid,
-			'tariffClass' => 'EUR300'
+		$ident = new ident();
+		$phone    = helpers::cleanPhoneNumber($_REQUEST['phone']);
+		$url      = 'http://mega-quiz.nl/wap/play';
+		$text_msg = 'Click this link '. $url;
+		$sms      = new sms();
+		$out = $sms->sendSms($phone, $text_msg, 'EUR0');
+		print_r($out);
+	}
+
+
+	public function index($request){
+		$this->template('main/index', array(
 		));
 	}
 
-	public function chargeUser($request){
-
-		sub::finalizeSubscriptionRequest($overrides);
-
-		// Once we have the ALIAS or MSISDN we can
-		// authorize and capture payment
-		sub::authorizePaymentRequest($overrides);
-		sub::capturePaymentRequest($overrides);
+	public function indexPost($request) {
+		$this->redirect('chargeUser');
 	}
-
 }
