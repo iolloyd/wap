@@ -31,6 +31,17 @@ class helpers {
 		return $pwd;
 	}
 
+	public static function logHit($controller, $method){
+		$r = new dbredis();
+		$c_m = $controller.':'.$method;
+		$r->incr($c_m.':'.date('y:m:d:h:i'));
+		$r->incr($c_m.':'.date('y:m:d:h'));
+		$r->incr($c_m.':'.date('y:m:d'));
+		$r->incr($c_m.':'.date('y:m'));
+		$r->incr($c_m.':'.date('y'));
+		$r->incr($c_m);
+	}
+
 	public static function unCamelize($word){
 		$out = preg_replace('/_(\w)(.*)$/', strtoupper('${1}').'${2}', $word);
 		return $out;

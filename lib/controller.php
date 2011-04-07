@@ -7,7 +7,7 @@ class controller extends mixin{
 	}
 
 	public function __call($name, $args){
-		echo 'You called ' . $name . 
+		echo 'You called ' . CONTROLLER.'::'.METHOD. 
 			 ' with ' . print_r($args, true) . 
 			 ' but I am not defined :-(';
 	}
@@ -52,21 +52,22 @@ class controller extends mixin{
 	}
 
 	protected function template($tpl_name, $vars=array()){
-		$d               = debug_backtrace();
-		$o               = new $d[1]['object'];
+		$d = debug_backtrace();
+		$o = new $d[1]['object'];
 		foreach ($vars as $k => $v) {
 			$$k = $v;
 		}
-		$layout = $o->layout;
-		$ab = $this->loadAB($layout, $tpl_name);
-		$layout = $ab['layout'];
+		$layout   = $o->layout;
+		$ab       = $this->loadAB($layout, $tpl_name);
+		$layout   = $ab['layout'];
 		$tpl_name = $ab['template'];
-		$wrapper = TEMPLATEDIR.'/'.$layout.'.php';
-		$content = TEMPLATEDIR.'/'.$tpl_name.'.php';
+		$wrapper  = TEMPLATEDIR.'/'.$layout.'.php';
+		$content  = TEMPLATEDIR.'/'.$tpl_name.'.php';
 		ob_start();
 		require $content;
 		$content = ob_get_contents();
 		ob_get_clean();
+
 		if (file_exists($wrapper)) {
 			require($wrapper);
 		}

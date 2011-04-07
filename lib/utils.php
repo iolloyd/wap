@@ -56,7 +56,7 @@ function getControllerAndMethod(){
 	$path = trim(getPath(), '/');
 	$toks = explode('/', $path, 3);
 	$ctrl = (count($toks) > 0 && $toks[0] != '') 
-		? $toks[0] : 'defaults';
+		? $toks[0] : 'main';
 
 	$meth = count($toks) > 1 ? helpers::unCamelize($toks[1]) : 'index';
 	$vars = count($toks) > 2 ? explode('/', $toks[2]) : array();
@@ -80,9 +80,8 @@ function logHit($controller, $method){
 }
 
 function showTemplate($c, $m, $vars) {
-	$content = call_user_func_array(
-		array(new $c(), $m), 
-		array($vars));
+	$content = call_user_func_array( array(new $c(), $m), array($vars));
+	return $content;
 }
 
 function runPlugins(){
@@ -97,14 +96,9 @@ function runPlugins(){
 	}
 }
 
-function run($env='prod'){
-	$p           = getControllerAndMethod();
-	$controller  = $p[0];
-	$method      = $p[1];
-	$vars        = $p[2];
-	$controller  = str_replace('-', '_', $controller);
-	$_controller = new $controller();
-	$vars        = array('vars' => $vars);
+function run(){
+	list($controller, $method, $vars) = getControllerAndMethod();
+	$vars = array('vars' => $vars);
 
 	if (!authorized($controller, $method)) {
 		$controller = 'auth';
