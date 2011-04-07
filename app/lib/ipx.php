@@ -12,7 +12,7 @@ class ipx {
 		$this->cfg       = config::read('defaults', 'ipx');
 		$cfgdir          = dirname(dirname(dirname(__FILE__))).'/config';
 		$this->wsdl_file = $cfgdir.'/'.$wsdl_file;
-		$this->client    = new SoapClient($wsdl_file);
+		$this->client    = new SoapClient($this->wsdl_file);
 	}
 
 	public function buildParams($keys, $overrides=array()){

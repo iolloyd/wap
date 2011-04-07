@@ -1,8 +1,6 @@
 <html>
-<head>
-<title>
-Auth
-</title>
-</head>
-<?= $content ?>
+	<head>
+		<title> Auth </title>
+	</head>
+	<?= $content ?>
 </html>

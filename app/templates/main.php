@@ -2,15 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>Play Time Folks</title>
+		<title>Waptastic</title>
 		<link href="/css/main.css" rel="stylesheet" type="text/css" />
-		<script src="/scripts/validation.js" type="text/javascript"></script>
 		<script src="/scripts/core.js" type="text/javascript"></script>
 		<script src="/scripts/app.js" type="text/javascript"></script>
+		<script src="/scripts/form_validation.js" type="text/javascript"></script>
 	</head>
-	<body onLoad="document.f1.telefono.focus();">
-<?=$content?>
-
+	<body>
+		<?=$content?>
 	</body>
 </html>
 

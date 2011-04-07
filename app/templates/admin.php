@@ -9,7 +9,7 @@
 	
 	</head>
 	<body>
-		<? include('_menu.php') ?>
+		<? include('_admin_menu.php') ?>
 		<?= $content ?>
 	</body>
 </html>

@@ -1,9 +1,4 @@
 <?php
-/**
- * @author Lloyd Moore <manchesterboy@gmail.com>
- * @version 2.1
- * 
- */
 class sms extends ipx {
 	var $wsdl_file;
 
@@ -11,8 +6,9 @@ class sms extends ipx {
 	 * @param string $config_file 
 	 * @return void
 	 */
-	public function __construct($wsdl_file){
-		$this->init($wsdl_file);
+	public function __construct(){
+		$this->wsdl_file = 'sms.xml';
+		$this->init($this->wsdl_file);
 	}
 
 	public function sendBillingSms($phone, $reference_id, $tariff='EUR300', $password=false) {
@@ -27,7 +23,7 @@ class sms extends ipx {
 			'tariffClass'        => $tariff,
 			'referenceId'        => $reference_id
 		);
-		return $this->makeCall($this->client_sms, 'send', $this->wsdl_files['sms'], $overrides);
+		return $this->makeCall('send', $overrides);
 	}
 
 	public function sendConfirmationSms($phone) {
@@ -37,7 +33,7 @@ class sms extends ipx {
 			'userData'           => $text,
 			'tariffClass'        => 'EUR0'
 		);
-		return $this->makeCall($this->client_sms, 'send', $this->wsdl_files['sms'], $overrides);
+		return $this->makeCall('send', $overrides);
 	}
 
 	public function sendForgottenPassword($phone) {
@@ -48,7 +44,7 @@ class sms extends ipx {
 			'tariffClass'        => 'EUR300'
 		);
 
-		return $this->makeCall($this->client_sms, 'send', $this->wsdl_files['sms'], $overrides);
+		return $this->makeCall('send', $overrides);
 	}
 
 	public function sendSms($phone, $text, $tariff='EUR0'){
@@ -58,6 +54,6 @@ class sms extends ipx {
 			'tariffClass'        => $tariff
 		);
 
-		return $this->makeCall($this->client_sms, 'send', $this->wsdl_files['sms'], $overrides);
+		return $this->makeCall('send', $overrides);
 	}
 }

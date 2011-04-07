@@ -1,8 +1,9 @@
 all:
     defaults:
         campaignName         : "#NULL#"
-        correlationId        : IPX
+        correlationId        : IPXWAP
         clientIPAddress      : "#NULL#"
+        contentName          : WAP
         originatingAddress   : 4400
         originatorTON        : 0
         destinationAddress   : none
@@ -22,9 +23,9 @@ all:
         serviceCategory      : "#NULL#"
         serviceMetaData      : "#NULL#"
         language             : "#NULL#"
-        username             : "one-nl"
-        password             : "R1bh5q6VYL"
-        returnURL            : "http://www.mega-quiz.nl/activate"
+        username             : "becomP-ES"
+        password             : "Hn8R314a"
+        returnURL            : "http://mega-quiz.nl/wap/play"
         host_sms_api         : "sms.xml"
         host_sub_api         : "sub.xml"
         frequencyInterval    : 2
