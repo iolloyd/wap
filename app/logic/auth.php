@@ -1,5 +1,6 @@
 <? 
 class auth extends controller {
+	var $layout = 'auth';
 	public function login(){
 		$this->template('auth/login');
 	}
@@ -11,7 +12,7 @@ class auth extends controller {
 			$this->redirect('/admin');
 		} else {
 			echo 'You are not authorized to be here';
+			$this->template('auth/login');
 		}
-		$this->template('auth/login');
 	}
 }

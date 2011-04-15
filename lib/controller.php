@@ -1,6 +1,6 @@
 <?php
 class controller extends mixin{
-	var $layout = 'empty';
+	var $layout = 'main';
 	public function __construct(){
 		parent::__construct();
 		$this->r = new dbredis();

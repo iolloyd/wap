@@ -55,10 +55,14 @@ function getAppEnv(){
 function getControllerAndMethod(){
 	$path = trim(getPath(), '/');
 	$toks = explode('/', $path, 3);
-	$ctrl = (count($toks) > 0 && $toks[0] != '') 
-		? $toks[0] : 'main';
-
-	$meth = count($toks) > 1 ? helpers::unCamelize($toks[1]) : 'index';
+	if (count($toks) == 1) {
+		$ctrl = 'main'; 
+		$meth = empty($toks[0]) ? 'index' : helpers::unCamelize($toks[0]); 
+		$vars = array();
+	} else {
+		$ctrl = helpers::unCamelize($toks[0]);
+		$meth = helpers::unCamelize($toks[1]);
+	}
 	$vars = count($toks) > 2 ? explode('/', $toks[2]) : array();
 
 	if ($_SERVER['REQUEST_METHOD'] == 'POST') {

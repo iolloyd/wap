@@ -25,7 +25,7 @@ all:
         language             : "#NULL#"
         username             : "becomP-ES"
         password             : "Hn8R314a"
-        returnURL            : "http://mega-quiz.nl/wap/play"
+        returnURL            : "http://wap.mega-quiz.nl/wap/play"
         host_sms_api         : "sms.xml"
         host_sub_api         : "sub.xml"
         frequencyInterval    : 2

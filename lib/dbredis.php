@@ -138,9 +138,10 @@ class dbredis {
 		$data['key']       = $key;
 		$data['timestamp'] = $time;
 
-		$this->r->incr('count:'.date('YmdH').':'.$event);
 		$this->r->incr('count:'.date('Ymd') .':'.$event);
-
+		foreach ($data as $key => $v){ 
+			$this->r->incr('count:'.date('Ymd') .':'.$event.':'.$key);
+		}
 		$this->r->zadd('zset:'.$event,          $time, $id);
 		$this->r->zadd('zset:'.$event.':'.$key, $time, $id);
 
@@ -157,8 +158,8 @@ class dbredis {
 
 	}
 
-	public function pullAllEvents($evt, $start=0, $end=-1) {
-		$keys = $this->r->zrevrange('zset:'.$evt, 0, -1);
+	public function pullAllEvents($evt, $start_date, $end_date) {
+		$keys = $this->r->zrangebyscore('zset:'.$evt, $start_date, $end_date);
 		$evts = array();
 
 		foreach ($keys as $k) {

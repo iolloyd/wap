@@ -56,14 +56,42 @@ class admin extends controller{
 
 
 	public function phones($request){
-		$results = array(
-			'send_sms'   => $this->r->pullAllEvents('send_sms'),
-			'subscribed' => $this->r->pullAllEvents('create_sub'),
-			'confirm'    => $this->r->pullAllEvents('send_confirm_sms'),
-			'billing'    => $this->r->pullAllEvents('send_billing_sms')
-		);
+		$today                    = date('Ymdhis');
+		$timestamp_last_week      = time() - (60 * 60 * 24 * 7);
+		$timestamp_last_fortnight = time() - (60 * 60 * 24 * 15);
+		$timestamp_last_month     = time() - (60 * 60 * 24 * 30);
+		$last_week                = date('Ymd', $timestamp_last_week).'000000';
+		$last_fortnight           = date('Ymd', $timestamp_last_fortnight).'000000';
+		$last_month               = date('Ymd', $timestamp_last_month).'000000';
 
-		$this->template('admin/show_phones',array(
+		$start_date = $last_fortnight;
+		$end_date  = $today;
+		$results = array(
+			'send_sms'   => array_reverse($this->r->pullAllEvents('send_sms' , $start_date , $end_date) ) , 
+			'subscribed' => $this->r->pullAllEvents('create_sub'             , $start_date , $end_date)   , 
+			'confirm'    => $this->r->pullAllEvents('send_confirm_sms'       , $start_date , $end_date)   , 
+			'billing'    => $this->r->pullAllEvents('send_billing_sms'       , $start_date , $end_date)
+		);
+		$stats = array(
+			'send_sms'   => array(),
+			'subscribed' => array(),
+			'confirm'    => array(),
+			'billing'    => array()
+		);
+		foreach ($results as $name => $data) {
+			foreach ($data as $k => $vv) {
+				foreach ($vv as $k => $v) {
+					if (!$v) continue;
+					if (is_numeric(str_replace('-','',$v))) continue;
+					if (empty($stats[$name]["'$v'"])) $stats[$name]["'$v'"] = 0;
+					$stats[$name]["'$v'"] +=1;
+				}
+			}
+		}
+		$this->template('admin/phones',array(
+			'start_date' => $start_date,
+			'end_date' => $end_date,
+			'stats'   => $stats,
 			'results' => $results
 		));
 	}

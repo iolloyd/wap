@@ -47,6 +47,8 @@ class ipx {
 	public function makeCall($method, $overrides){
 		$keys     = $this->getElementsForMethod($method);
 		$data     = $this->buildParams($keys, $overrides);
+		echo '<pre>';
+		print_r($data);
 		$response = $this->client->__soapCall($method, array('request' => $data)); 
 		return $response;
 	}
