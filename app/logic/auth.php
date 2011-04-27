@@ -2,7 +2,8 @@
 class auth extends controller {
 	var $layout = 'auth';
 	public function login(){
-		$this->template('auth/login');
+		$template = config::read('auth_template', 'auth');
+		$this->template($template);
 	}
 
 	public function loginPost($request){
