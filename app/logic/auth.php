@@ -7,6 +7,8 @@ class auth extends controller {
 	}
 
 	public function loginPost($request){
+
+		// The file that has authorized users information
 		$cfg = config::read('authorized_users', 'auth');
 		if ($_POST['pass'] == $cfg[$_POST['user']]) {
 			$_SESSION['is_authorized'] = true;

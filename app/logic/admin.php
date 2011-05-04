@@ -54,7 +54,6 @@ class admin extends controller{
 		$authorized_users = Config::read('authorized_users');
 	}
 
-
 	public function phones($request){
 		$today                    = date('Ymdhis');
 		$timestamp_last_week      = time() - (60 * 60 * 24 * 7);

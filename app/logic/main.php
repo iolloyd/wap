@@ -3,22 +3,9 @@ class main extends controller {
 	var $layout = 'main';
 
 	public function activatePost($request){
-		$phone = helpers::cleanPhoneNumber($_REQUEST['phone']);
-		$msg   = config::read('free', 'messages');
-		$sms   = new sms();
-		$out   = $sms->sendSms($phone, $msg, 'EUR0ES');
-
-		$this->r->recordEvent('send_sms', $phone, $out);
-
-		$messages = array( 'no', '');
-		$headings = array('Rejected', 'Accepted');
-
-		$this->template('main/activated', array(
-			'response' => $out,
-			'number'   => $phone,
-			'heading'  => $headings[$out->responseMessage == 'Success'],
-			'message'  => $messages[$out->responseMessage == 'Success']
-		));
+		$phone    = helpers::cleanPhoneNumber($_REQUEST['phone']);
+		$ident    = new ident();
+		$ident->initIdentitySession();
 	}
 
 	public function index($request){
@@ -26,55 +13,87 @@ class main extends controller {
 		));
 	}
 
-	/**
-	 * 1. Browse
-	 * Here the user has browsed to us or received an sms with our link.
-	 */
 	public function playwin($request){
-		// 2. Request for subscription, 3. Create session
+		$ident           = new ident();
+		$alias           = $ident->getAliasForUser();
 		$subscription    = new subscription();
 		$create_response = $subscription->createSubscriptionSession(array(
-			'tariffClass' => 'EUR300'
+			'username'          => config::read('subscription_username', 'app'),
+			'password'          => config::read('subscription_password', 'app'),
+			'returnURL'         => 'http://juganar.com/main/ok',
+			'contentName'       => 'weekly subscription',
+			'eventCount'        => 500,
+			'duration'          => 3285,
+			'frequencyInterval' => 3,
+			'frequencyCount'    => 1,
+			'tariffClass'       => 'EUR290',
+			'tariffClassId'     => 'EUR290'
 		));
-
-		// 4. Session Information
-		$redirect_url = $create_response->redirectURL;
-		$session_id   = $create_response->sessionId;
-
 		if ($create_response->responseMessage == 'Success') {
-			// 5. Redirect to service
-			echo '<a href='.$redirect_url.'>Redirect</a>'; die;
-			header("Location: $redirect_url");
+			$this->r->set('session:'.session_id(), $create_response->sessionId);
+			header("Location: ".$create_response->redirectURL);
 			exit();
-		} else {
-			echo 'Could not redirect!';
-			die;
-		}
-		$final_response  = $subscription->finalizeSession(array(
-			'sessionId' => $create_response->sessionId
-		));
-
-		print_r($final_response);
+		} 
 	}
 
+	/**
+	 * Finalize subscription
+	 */
 	public function ok($request){
-		print_r($_REQUEST);
-	}
-
-	private function checkstatus($create_response){
-		$subscription = new subscription();
-		$status_response = $subscription->checkStatus(array(
-			'sessionId' => $create_response->sessionId
-		));
-		print_r($status_response);
+		$this->checkStatus();
 		$this->finalizeSession();
+		$this->createSubscription();
 	}
 
-	private function finalizeResponse(){
-		$response = $subscription->finalizeResponse(array(
+	public function terminateSubscription($request){
+		$subscription    = new subscription();
+		$phone           = helpers::cleanPhoneNumber($_GET['consumerId');
+		$subscription_id = $_GET['subscription_id'];
+		$response        = $subscription->terminateSubscription(array(
+			'consumerId'     => $phone,
+			'subscriptionId' => $subscription_id
 		));
-		if ($response->responseMessage == 'Success'){
-			//cool
+	}
+
+	private function sendInitialSms($phone) {
+		$msg      = config::read('free', 'messages');
+		$sms      = new sms();
+		$out      = $sms->sendSms($phone, $msg, 'EUR0ES');
+		$choice   = $out->responseMessage == 'Success';
+		$this->r->recordEvent('send_sms', $phone, $out);
+		$headings = array('Rejected', 'Accepted');
+		$messages = array('no'      , ''        );
+		$this->template('main/activated', array(
+			'response' => $out,
+			'number'   => $phone,
+			'heading'  => $headings[$choice],
+			'message'  => $messages[$choice]
+		));
+	}
+
+	private function checkStatus(){
+		$details    = config::read('defaults', 'ipx');
+		$user       = $details['username2'];
+		$pwd        = $details['password2'];
+		$session_id = $this->r->get('session:'.session_id());
+		$ident = new ident();
+		$out = $ident->checkStatus(array(
+			'username'  => $user,
+			'password'  => $pwd,
+			'sessionId' => $session_id
+		));
+
+		if ($out->statusMessage ==  'Authenticated') {
+			$out = $ident->finalizeSession(array(
+				'username'  => $user,
+				'password'  => $pwd,
+				'sessionId' => $session_id
+			));
+		}
+
+		if ($out->responseMessage == 'Success'){
+			$this->r->recordEvent('finalize_subscription', $session_id, $out);
 		}
 	}
+
 }
