@@ -17,9 +17,10 @@ class main extends controller {
 	 * This is called when the user clicks the link in the email
 	 */
 	public function playwin($request){
+		/*
 		$ident = new ident();
 		$alias = $ident->getAliasForUser();
-		print_r($alias); die;
+		*/
 		$out   = $this->chargeUser();
 	}
 
