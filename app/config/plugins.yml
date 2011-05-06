@@ -1,0 +1,5 @@
+all:
+    plugins:
+        rstats:
+            class: rlog
+            method: registerHit

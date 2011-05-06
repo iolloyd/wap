@@ -7,9 +7,7 @@ class controller extends mixin{
 	}
 
 	public function __call($name, $args){
-		echo 'You called ' . CONTROLLER.'::'.METHOD. 
-			 ' with ' . print_r($args, true) . 
-			 ' but I am not defined :-(';
+		echo 'You called ' . CONTROLLER.'::'.METHOD.  ' ?';
 	}
 
 	public function call($uri, $args){

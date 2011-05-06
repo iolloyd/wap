@@ -1,0 +1,9 @@
+all:
+    routes:
+        admin: { controller: admin, method: index }
+    ab:
+dev:
+    routes:
+        admin: { controller: admin, method: index }
+    ab:
+

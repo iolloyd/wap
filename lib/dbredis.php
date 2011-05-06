@@ -183,31 +183,13 @@ class dbredis {
 		return $evts;
 	}
 
-	/**
-	 * @deprecated
-	 * @param string $collection
-	 * @param string $key
-	 * @param array $entry
-	 */
-	public function save($collection, $key, $entry){
-		foreach ($entry as $k => $v) {
-			if (is_array($v)) {
-				$entry[$k] = serialize($v); } }
-
-		$this->r->lpush('list:'.$collection, $key);
-		$this->r->hmset($collection.':'.$key, $entry);
-	}
-
-	/**
-	 * @deprecated
-	 * @param string $collection
-	 * @param string $key
-	 * @param array $data
-	 * @return void
-	 */
-	public function saveHash($collection, $key, $data) {
-		$this->r->sadd('list:'.$collection, $key);
-		$this->r->hmset($collection.':'.$key, $data);
+	public function saveReverse($key, $value, $prefix='') {
+		if ($prefix) {
+			$key   = $pre.':'.$key;
+			$value = $pre.':'.$value;
+		}
+		$this->r->set($key, $value);
+		$this->r->set($value, $key);
 	}
 
 	/**
@@ -223,19 +205,6 @@ class dbredis {
 			$entry['id'] = $id;
 		}
 		$this->r->hmset($collection.':'.$id, $entry);
-	}
-
-	/**
-	 * @param string $key
-	 * @param string $entry
-	 * @param array $vals
-	 */
-	protected function saveRev($key, $entry, $vals=array()){
-		foreach ($entry as $k => $v) {
-			foreach ($vals as $val) {
-				$this->r->set($key.':'.$v, $val);
-			}
-		}
 	}
 
 }

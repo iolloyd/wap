@@ -4,9 +4,10 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Waptastic</title>
 		<link href="/css/main.css" rel="stylesheet" type="text/css" />
-		<script src="/scripts/core.js" type="text/javascript"></script>
-		<script src="/scripts/app.js" type="text/javascript"></script>
-		<script src="/scripts/form_validation.js" type="text/javascript"></script>
+		<script src="/js/core.js" type="text/javascript"></script>
+		<script src="/js/app.js" type="text/javascript"></script>
+		<script src="/js/form_validation.js" type="text/javascript"></script>
+	    <script src="/js/stats.js"></script>
 	</head>
 	<body>
 		<?=$content?>

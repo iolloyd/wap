@@ -9,22 +9,22 @@ define('ROOT'          , dirname(dirname(__FILE__)));
 // Global directory definitions used by framework //
 ////////////////////////////////////////////////////
 
-define('CONFDIR'       , ROOT.'/config');
+define('CONFDIR'       , ROOT.'/app/config');
 
 define('LIBDIR'        , ROOT.'/lib');
 define('PREDISLIBDIR'  , ROOT.'/lib/predis/lib');
 
 define('APPLIBDIR'     , ROOT.'/app/lib');
-define('LOGDIR'        , ROOT.'/app/logs');
 define('LOGICDIR'      , ROOT.'/app/logic');
 define('TEMPLATEDIR'   , ROOT.'/app/templates');
-define('PLUGINDIR'     , ROOT.'/app/plugins');
 
-define('FORMSLOGICDIR' , ROOT.'/app/forms/logic');
+define('LOGDIR'        , ROOT.'/logs');
+define('PLUGINDIR'     , ROOT.'/plugins');
+
 define('FORMSDIR'      , ROOT.'/app/forms/templates');
 
 ////////////////////////////////////////////////////
-// ADD DEFINED DIRECTORIES TO PHP SEARCH PATH     //
+// Add Defined directories to php search path     //
 ////////////////////////////////////////////////////
 
 set_include_path(get_include_path() . ':' . APPLIBDIR);

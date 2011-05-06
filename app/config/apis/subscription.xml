@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+xmlns:tns="http://www.ipx.com/api/services/subscriptionapi31"
+xmlns:typens="http://www.ipx.com/api/services/subscriptionapi31/types"
+targetNamespace="http://www.ipx.com/api/services/subscriptionapi31">
+
+  <types>
+    <xsd:schema targetNamespace="http://www.ipx.com/api/services/subscriptionapi31/types"
+    elementFormDefault="qualified">
+      <xsd:element name="CreateSubscriptionSessionRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="correlationId" type="xsd:string" />
+            <xsd:element name="clientIPAddress" type="xsd:string" />
+            <xsd:element name="tariffClass" type="xsd:string" />
+            <xsd:element name="returnURL" type="xsd:string" />
+            <xsd:element name="serviceName" type="xsd:string" />
+            <xsd:element name="serviceCategory" type="xsd:string" />
+            <xsd:element name="serviceMetaData" type="xsd:string" />
+            <xsd:element name="eventCount" type="xsd:int" />
+            <xsd:element name="duration" type="xsd:int" />
+            <xsd:element name="frequencyInterval" type="xsd:int" />
+            <xsd:element name="frequencyCount" type="xsd:int" />
+            <xsd:element name="language" type="xsd:string" />
+            <xsd:element name="VAT" type="xsd:double" />
+            <xsd:element name="campaignName" type="xsd:string" />
+            <xsd:element name="username" type="xsd:string" />
+            <xsd:element name="password" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="CreateSubscriptionSessionResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="correlationId" type="xsd:string" />
+            <xsd:element name="sessionId" type="xsd:string" />
+            <xsd:element name="redirectURL" type="xsd:string" />
+            <xsd:element name="responseCode" type="xsd:int" />
+            <xsd:element name="responseMessage"
+            type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="FinalizeSubscriptionSessionRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="correlationId" type="xsd:string" />
+            <xsd:element name="sessionId" type="xsd:string" />
+            <xsd:element name="username" type="xsd:string" />
+            <xsd:element name="password" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="FinalizeSubscriptionSessionResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="correlationId" type="xsd:string" />
+            <xsd:element name="subscriptionId" type="xsd:string" />
+            <xsd:element name="subscriptionStatus"
+            type="xsd:int" />
+            <xsd:element name="subscriptionStatusMessage"
+            type="xsd:string" />
+            <xsd:element name="consumerId" type="xsd:string" />
+            <xsd:element name="operator" type="xsd:string" />
+            <xsd:element name="operatorNetworkCode" type="xsd:int" />
+            <xsd:element name="VAT" type="xsd:double" />
+            <xsd:element name="responseCode" type="xsd:int" />
+            <xsd:element name="reasonCode" type="xsd:int" />
+            <xsd:element name="responseMessage" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="CreateSubscriptionRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="correlationId" type="xsd:string" />
+            <xsd:element name="consumerId" type="xsd:string" />
+            <xsd:element name="referenceId" type="xsd:string" />
+            <xsd:element name="tariffClass" type="xsd:string" />
+            <xsd:element name="serviceName" type="xsd:string" />
+            <xsd:element name="serviceCategory" type="xsd:string" />
+            <xsd:element name="serviceMetaData" type="xsd:string" />
+            <xsd:element name="eventCount" type="xsd:int" />
+            <xsd:element name="duration" type="xsd:int" />
+            <xsd:element name="frequencyInterval" type="xsd:int" />
+            <xsd:element name="frequencyCount" type="xsd:int" />
+            <xsd:element name="VAT" type="xsd:double" />
+            <xsd:element name="campaignName" type="xsd:string" />
+            <xsd:element name="username" type="xsd:string" />
+            <xsd:element name="password" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="CreateSubscriptionResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="correlationId" type="xsd:string" />
+            <xsd:element name="subscriptionId" type="xsd:string" />
+            <xsd:element name="subscriptionStatus" type="xsd:int" />
+            <xsd:element name="subscriptionStatusMessage" type="xsd:string" />
+            <xsd:element name="operator" type="xsd:string" />
+            <xsd:element name="operatorNetworkCode" type="xsd:int" />
+            <xsd:element name="VAT" type="xsd:double" />
+            <xsd:element name="responseCode" type="xsd:int" />
+            <xsd:element name="reasonCode" type="xsd:int" />
+            <xsd:element name="responseMessage" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="AuthorizePaymentRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="correlationId" type="xsd:string" />
+            <xsd:element name="consumerId" type="xsd:string" />
+            <xsd:element name="subscriptionId" type="xsd:string" />
+            <xsd:element name="serviceMetaData" type="xsd:string" />
+            <xsd:element name="username" type="xsd:string" />
+            <xsd:element name="password" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="AuthorizePaymentResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="correlationId" type="xsd:string" />
+            <xsd:element name="sessionId" type="xsd:string" />
+            <xsd:element name="authorizationLevel"
+            type="xsd:int" />
+            <xsd:element name="responseCode" type="xsd:int" />
+            <xsd:element name="reasonCode" type="xsd:int" />
+            <xsd:element name="responseMessage"
+            type="xsd:string" />
+            <xsd:element name="temporaryError"
+            type="xsd:boolean" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="CapturePaymentRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="correlationId" type="xsd:string" />
+            <xsd:element name="sessionId" type="xsd:string" />
+            <xsd:element name="username" type="xsd:string" />
+            <xsd:element name="password" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="CapturePaymentResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="correlationId" type="xsd:string" />
+            <xsd:element name="transactionId" type="xsd:string" />
+            <xsd:element name="responseCode" type="xsd:int" />
+            <xsd:element name="reasonCode" type="xsd:int" />
+            <xsd:element name="responseMessage"
+            type="xsd:string" />
+            <xsd:element name="temporaryError"
+            type="xsd:boolean" />
+            <xsd:element name="billingStatus" type="xsd:int" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="TerminateSubscriptionRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="correlationId" type="xsd:string" />
+            <xsd:element name="consumerId" type="xsd:string" />
+            <xsd:element name="subscriptionId" type="xsd:string" />
+            <xsd:element name="username" type="xsd:string" />
+            <xsd:element name="password" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="TerminateSubscriptionResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="correlationId" type="xsd:string" />
+            <xsd:element name="responseCode" type="xsd:int" />
+            <xsd:element name="responseMessage"
+            type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetSubscriptionStatusRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="correlationId" type="xsd:string" />
+            <xsd:element name="consumerId" type="xsd:string" />
+            <xsd:element name="subscriptionId" type="xsd:string" />
+            <xsd:element name="username" type="xsd:string" />
+            <xsd:element name="password" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetSubscriptionStatusResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="correlationId"             type="xsd:string" />
+            <xsd:element name="subscriptionStatus"        type="xsd:int" />
+            <xsd:element name="subscriptionStatusMessage" type="xsd:string" />
+            <xsd:element name="responseCode"              type="xsd:int" />
+            <xsd:element name="responseMessage"           type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </types>
+  <message name="createSubscriptionSessionRequest">
+    <part name="request"
+    element="typens:CreateSubscriptionSessionRequest" />
+  </message>
+  <message name="createSubscriptionSessionResponse">
+    <part name="result"
+    element="typens:CreateSubscriptionSessionResponse" />
+  </message>
+  <message name="finalizeSubscriptionSessionRequest">
+    <part name="request"
+    element="typens:FinalizeSubscriptionSessionRequest" />
+  </message>
+  <message name="finalizeSubscriptionSessionResponse">
+    <part name="result"
+    element="typens:FinalizeSubscriptionSessionResponse" />
+  </message>
+  <message name="createSubscriptionRequest">
+    <part name="request"
+    element="typens:CreateSubscriptionRequest" />
+  </message>
+  <message name="createSubscriptionResponse">
+    <part name="result"
+    element="typens:CreateSubscriptionResponse" />
+  </message>
+  <message name="authorizePaymentRequest">
+    <part name="request"
+    element="typens:AuthorizePaymentRequest" />
+  </message>
+  <message name="authorizePaymentResponse">
+    <part name="result"
+    element="typens:AuthorizePaymentResponse" />
+  </message>
+  <message name="capturePaymentRequest">
+    <part name="request" element="typens:CapturePaymentRequest" />
+  </message>
+  <message name="capturePaymentResponse">
+    <part name="result" element="typens:CapturePaymentResponse" />
+  </message>
+  <message name="terminateSubscriptionRequest">
+    <part name="request"
+    element="typens:TerminateSubscriptionRequest" />
+  </message>
+  <message name="terminateSubscriptionResponse">
+    <part name="result"
+    element="typens:TerminateSubscriptionResponse" />
+  </message>
+  <message name="getSubscriptionStatusRequest">
+    <part name="request"
+    element="typens:GetSubscriptionStatusRequest" />
+  </message>
+  <message name="getSubscriptionStatusResponse">
+    <part name="result"
+    element="typens:GetSubscriptionStatusResponse" />
+  </message>
+  <portType name="SubscriptionApiPort">
+    <operation name="createSubscriptionSession">
+      <input message="tns:createSubscriptionSessionRequest" />
+      <output message="tns:createSubscriptionSessionResponse" />
+    </operation>
+    <operation name="finalizeSubscriptionSession">
+      <input message="tns:finalizeSubscriptionSessionRequest" />
+      <output message="tns:finalizeSubscriptionSessionResponse" />
+    </operation>
+    <operation name="createSubscription">
+      <input message="tns:createSubscriptionRequest" />
+      <output message="tns:createSubscriptionResponse" />
+    </operation>
+    <operation name="authorizePayment">
+      <input message="tns:authorizePaymentRequest" />
+      <output message="tns:authorizePaymentResponse" />
+    </operation>
+    <operation name="capturePayment">
+      <input message="tns:capturePaymentRequest" />
+      <output message="tns:capturePaymentResponse" />
+    </operation>
+    <operation name="terminateSubscription">
+      <input message="tns:terminateSubscriptionRequest" />
+      <output message="tns:terminateSubscriptionResponse" />
+    </operation>
+    <operation name="getSubscriptionStatus">
+      <input message="tns:getSubscriptionStatusRequest" />
+      <output message="tns:getSubscriptionStatusResponse" />
+    </operation>
+  </portType>
+  <binding name="SubscriptionApiBinding"
+  type="tns:SubscriptionApiPort">
+    <soap:binding style="document"
+    transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="createSubscriptionSession">
+      <soap:operation soapAction="tns:createSubscriptionSession" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="finalizeSubscriptionSession">
+      <soap:operation soapAction="tns:finalizeSubscriptionSession" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="createSubscription">
+      <soap:operation soapAction="tns:createSubscription" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="authorizePayment">
+      <soap:operation soapAction="tns:authorizePayment" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="capturePayment">
+      <soap:operation soapAction="tns:capturePayment" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="terminateSubscription">
+      <soap:operation soapAction="tns:terminateSubscription" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="getSubscriptionStatus">
+      <soap:operation soapAction="tns:getSubscriptionStatus" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+  </binding>
+  <service name="SubscriptionApiService">
+    <port name="SubscriptionApi31"
+    binding="tns:SubscriptionApiBinding">
+      <soap:address location="http://europe.ipx.com/api/services2/SubscriptionApi31" />
+    </port>
+  </service>
+</definitions>
+

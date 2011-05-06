@@ -4,8 +4,8 @@ class main extends controller {
 
 	public function activatePost($request){
 		$phone    = helpers::cleanPhoneNumber($_REQUEST['phone']);
-		$ident    = new ident();
-		$ident->initIdentitySession();
+		$sms      = new sms();
+		$response = $sms->sendSms($phone, config::read('free', 'messages'));
 	}
 
 	public function index($request){
@@ -19,69 +19,61 @@ class main extends controller {
 	public function playwin($request){
 		$ident = new ident();
 		$alias = $ident->getAliasForUser();
-		$sub   = new subscription();
-		$out   = $sub->createSubscriptionSession(array(
-			'username'          => config::read('subscription_username', 'app'),
-			'password'          => config::read('subscription_password', 'app'),
-			'returnURL'         => 'http://juganar.com/main/ok',
-			'contentName'       => 'weekly subscription',
-			'eventCount'        => 500,
-			'duration'          => 3285,
-			'frequencyInterval' => 3,
-			'frequencyCount'    => 1,
-			'tariffClass'       => 'EUR290',
-			'tariffClassId'     => 'EUR290'
-		));
-		if ($out->responseMessage == 'Success') {
-			$this->r->set('session:'.session_id(), $out->sessionId);
-			header("Location: ".$create_response->redirectURL);
-			exit();
-		} 
+		print_r($alias); die;
+		$out   = $this->chargeUser();
 	}
 
 	/**
-	 * This is called after the user is redirected to IPX 
+	 * This is called after the user is redirected to IPX for ident 
 	 * and then IPX redirects them to us with the url 
 	 * provided by ourselves, which in this case is /main/ok.
 	 */
-	public function ok($request){
+	public function endident($request){
 		$details = config::read('defaults', 'ipx');
 		$user    = $details['username2'];
 		$pwd     = $details['password2'];
 		$status  = $this->checkStatus($user, $pwd);
-		if ($status->responseMessage == 'Activated') {
-			$out = $this->finalizeSubscriptionSession($user, $pwd);
+		if ($status->statusMessage == 'Authenticated') {
+			$out = $this->finalizeSession($user, $pwd);
 			if ($out->responseMessage == 'Success') {
-				$this->r->saveReverse($out->consumerId, $out->subscriptionId, 'subscription'); 
-				$out = $this->chargeUser($user, $pwd);
+				$this->setConsumerId($out->consumerId);
+				echo 'going to attempt create sub and charge user';
+				$this->chargeUser();
 			}
-			return $out;
-		} else {
-			return stdClass();
+		} 
+
+	}
+
+	private function chargeUser($tariff_class = 'EUR300ES') {
+		$this->chargeuser1();
+	}
+
+	private function chargeuser1(){
+		$sub = new subscription();
+		$out = $this->createSubscriptionSession();
+		if ($out->responseMessage == 'Success'){
+			header('Location: ' . $out->redirectURL);
+			exit();
 		}
 	}
 
-	/**
-	 * Charge the user
-	 */
-	private function chargeUser($user, $pwd){
-		$sub = new subscription();
-		$out = $sub->authorizePayment(array(
-			'username'       => $user,
-			'password'       => $pwd,
-			'consumerId'     => $this->r->get('session:'.session_id()),
-			'subscriptionId' => $subscription_id
-		));
-		if ($out->responseMessage == 'Success') {
+	public function chargeuser2(){
+		$out = $this->finalizeSubscriptionSession();
+		echo 'auth finalize response:';
+		print_r($out); die;
+		$out = $this->authorizePayment($out);
+		$out = $this->capturePayment($out);
+	}
+
+	private function capturePayment($prev_step){
+		if (@$prev_step && $prev_step->responseMessage == 'Success') {
+			$sub = new subscription();
 			$out = $sub->capturePayment(array(
-				'username'  => $user,
-				'password'  => $pwd,
-				'sessionId' => $out->sessionId
+				'username'  => $this->getSubscriptionUser(),
+				'password'  => $this->getSubscriptionPwd(),
+				'sessionId' => $this->getSessionId()
 			));
-			echo 'charged';
 			return $out;
-		} else {
-			return new stdClass();
 		}
 	}
 
@@ -99,7 +91,27 @@ class main extends controller {
 		));
 	}
 
-	public function sendInitialSms($phone) {
+
+	/******************************
+	 * Private utility methods
+	 *****************************/
+	private function getConsumerId(){
+		return $this->r->get('consumer_id:'.session_id());
+	}
+
+	private function getSessionId(){
+		return $this->r->get('session:'.session_id());
+	}
+
+	private function setConsumerId($consumer_id){
+		$this->r->set('consumer_id:'.session_id(), $consumer_id);
+	}
+
+	private function setSessionId($session_id) {
+		$this->r->set('session:'.session_id(), $session_id);
+	}
+
+	private function sendInitialSms($phone) {
 		$msg      = config::read('free', 'messages');
 		$sms      = new sms();
 		$out      = $sms->sendSms($phone, $msg, 'EUR0ES');
@@ -117,6 +129,9 @@ class main extends controller {
 		));
 	}
 
+	/*******************************
+	 * Used by identification API
+	 ******************************/
 	private function checkStatus($user, $pwd){
 		$session_id = $this->r->get('session:'.session_id());
 		$ident      = new ident();
@@ -128,20 +143,70 @@ class main extends controller {
 		return $out;
 	}
 
-	private function finalizeSubscriptionSession($user, $pwd, $status){
-		if (!($status && $status->responseMessage == 'Activated')) {
-			$session_id = $this->r->get('session:'.session_id());
-			$ident = new ident();
-			$out = $ident->finalizeSession(array(
-				'username'  => $user,
-				'password'  => $pwd,
-				'sessionId' => $session_id
+	private function finalizeSession($user, $pwd){
+		$session_id = $this->r->get('session:'.session_id());
+		$ident = new ident();
+		$out = $ident->finalizeSession(array(
+			'username'  => $user,
+			'password'  => $pwd,
+			'sessionId' => $session_id
+		));
+		return $out;
+	}
+
+	/*******************************
+	 * Used by subscription API
+	 ******************************/
+	private function createSubscriptionSession($tariff_class='EUR300ES'){
+		$sub = new subscription();
+		$out = $sub->createSubscriptionSession(array(
+			'username'    => $this->getSubscriptionUser(),
+			'password'    => $this->getSubscriptionPwd(),
+			'consumerId'  => $this->getConsumerId(),
+			'sessionId'   => $this->getSessionId(),
+			'returnURL'   => $this->getSubscriptionSessionUrl(),
+			'tariffClass' => $tariff_class
+		));
+		$this->setSessionId($out->sessionId);
+		return $out;
+	}
+
+	private function finalizeSubscriptionSession(){ 
+		$sub = new subscription();
+		$out = $sub->finalizeSubscriptionSession(array(
+			'sessionId' => $this->getSessionId(),
+			'username'  => $this->getSubscriptionUser(),
+			'password'  => $this->getSubscriptionPwd()
+		));
+		return $out;
+	}
+
+	private function authorizePayment($prev_step){
+		if ($prev_step->responseMessage == 'Success'){
+			return $sub->authorizePayment(array(
+				'user'           => $this->getSubscriptionUser(),
+				'password'       => $this->getSubscriptionPwd(),
+				'consumerId'     => $this->getConsumerId(),
+				'subscriptionId' => $this->getSubscriptionId(),
+				'sessionId'      => $this->getSessionId(),
+				'tariffClass'    => $tariff_class
 			));
-			return $out;
-		} else {
-			// Return the same type whenever possible, even 
-			// in crappy type-poo php
-			return new stdClass();
 		}
 	}
+
+	private function getSubscriptionPwd(){
+		$details = config::read('defaults', 'ipx');
+		return $details['password2'];
+	}
+
+	private function getSubscriptionUser(){
+		$details = config::read('defaults', 'ipx');
+		return $details['username2'];
+	}
+
+	private function getSubscriptionSessionUrl(){
+		$details = config::read('defaults', 'ipx');
+		return $details['subscription_url'];
+	}
+
 }

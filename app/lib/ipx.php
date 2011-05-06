@@ -10,8 +10,7 @@ class ipx {
 
 	public function init($wsdl_file){
 		$this->cfg       = config::read('defaults', 'ipx');
-		$cfgdir          = dirname(dirname(dirname(__FILE__))).'/config';
-		$this->wsdl_file = $cfgdir.'/'.$wsdl_file;
+		$this->wsdl_file = CONFDIR .'/' . $wsdl_file;
 		$this->client    = new SoapClient($this->wsdl_file);
 	}
 
@@ -21,10 +20,8 @@ class ipx {
 		foreach ($keys as $k) {
 			$out[$k] = @$vars[$k];
 		}
-		if (count($overrides)) {
-			foreach ($overrides as $k => $v) {
-				$out[$k] = $v;
-			}
+		foreach ($overrides as $k => $v) {
+			$out[$k] = $v;
 		}
 		return $out;
 	}
@@ -45,10 +42,9 @@ class ipx {
 	}
 
 	public function makeCall($method, $overrides){
+		if (!empty($overrides[0])) $overrides = $overrides[0];
 		$keys     = $this->getElementsForMethod($method);
 		$data     = $this->buildParams($keys, $overrides);
-		echo '<pre>';
-		print_r($data);
 		$response = $this->client->__soapCall($method, array('request' => $data)); 
 		return $response;
 	}

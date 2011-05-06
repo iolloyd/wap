@@ -1,0 +1,15 @@
+all:
+    auth_controller : auth       # this default can be overriden
+    auth_method     : login      # this default can be overriden
+    auth_template   : auth/login # this default can be overriden
+        
+    authorized_users:
+        lloyd: thesame
+        lionel: jefe
+    secure_methods:
+        admin: 
+dev:
+    authorized_users:
+        user: pass 
+    secure_methods:
+        admin: 

@@ -8,32 +8,30 @@ function __autoload($class){
 	include($class.'.php');
 }
 
-function authorized($ctrl, $meth) {
-	// If we are already authorized just return true;
+function secureUri($ctrl, $meth) {
+	$list        = config::read('secure_methods', 'auth');
+	$controllers = array_keys($list);
 
-	if (!empty($_SESSION['is_authorized'])
-		&& $_SESSION['is_authorized'] == true)
-	{
-		return true;
-	}
-
-	// Let's see if this request is supposed to
-	// be secure
-	$secured            = config::read('secure_methods', 'auth');
-	$secure_controllers = array_keys($secured);
-	if (!in_array($ctrl, $secure_controllers)) {
-		return true;
-	}
-
-	// OK - This is a secured controller, lets see if the method
-	// is secure. If the method list is empty, it means that all methods
-	// are secure and require auth.
-	$secure_methods = $secured[$ctrl];
-	if (!$secure_methods || in_array($meth, $secure_methods)) {
-		$auth_required = true;
+	// case 1: controller not in list, therefore no auth required
+	if (!in_array($ctrl, $controllers)) {
+		return false;
 	} 
+	
+	if (!$methods = $list[$ctrl]) {;
+	 $methods = array();
+	}
 
-	$_SESSION['is_authorized'] = false;
+	// case 2: all methods required auth
+	if (array() == $methods){
+		return true;
+	}
+
+	// case 3: only named methods require auth
+	if (in_array($meth, $methods)) {
+		return true;
+	}
+
+	// case 4: controller in list but method is not so no auth required
 	return false;
 }
 
@@ -45,23 +43,26 @@ function getPath(){
 }
 
 function getAppEnv(){
-	if (in_array(@$_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'))) {
-		return 'dev';
-	} else {
-		return 'prod';
-	}
+	return (in_array(@$_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'))) 
+		? 'dev' : 'prod';
 }
 
 function getControllerAndMethod(){
 	$path = trim(getPath(), '/');
 	$toks = explode('/', $path, 3);
-	if (count($toks) == 1) {
-		$ctrl = 'main'; 
-		$meth = empty($toks[0]) ? 'index' : helpers::unCamelize($toks[0]); 
-		$vars = array();
+    $routes = config::read('routes', 'routes');
+	if (in_array($path, array_keys($routes))) {
+		$ctrl = $routes[$path]['controller'];
+		$meth = $routes[$path]['method'];
 	} else {
-		$ctrl = helpers::unCamelize($toks[0]);
-		$meth = helpers::unCamelize($toks[1]);
+		if (count($toks) == 1) {
+			$ctrl = 'main'; 
+			$meth = empty($toks[0]) ? 'index' : helpers::unCamelize($toks[0]); 
+			$vars = array();
+		} else {
+			$ctrl = helpers::unCamelize($toks[0]);
+			$meth = helpers::unCamelize($toks[1]);
+		}
 	}
 	$vars = count($toks) > 2 ? explode('/', $toks[2]) : array();
 
@@ -72,20 +73,17 @@ function getControllerAndMethod(){
 	return array($ctrl, $meth, $vars);
 }
 
-function logHit($controller, $method){
-	$r = new dbredis();
-	$c_m = $controller.':'.$method;
-	$r->incr($c_m.':'.date('y:m:d:h:i'));
-	$r->incr($c_m.':'.date('y:m:d:h'));
-	$r->incr($c_m.':'.date('y:m:d'));
-	$r->incr($c_m.':'.date('y:m'));
-	$r->incr($c_m.':'.date('y'));
-	$r->incr($c_m);
+function showTemplate($c, $m, $vars) {
+	$content = call_user_func_array(array(new $c(), $m), array($vars));
+	return $content;
 }
 
-function showTemplate($c, $m, $vars) {
-	$content = call_user_func_array( array(new $c(), $m), array($vars));
-	return $content;
+function isLoggedIn(){
+	return $_SESSION['is_authorized'] == true;
+}
+
+function logout(){
+	$_SESSION['is_authorized'] = false;
 }
 
 function runPlugins(){
@@ -104,9 +102,11 @@ function run(){
 	list($controller, $method, $vars) = getControllerAndMethod();
 	$vars = array('vars' => $vars);
 
-	if (!authorized($controller, $method)) {
-		$controller = 'auth';
-		$method     = 'login';
+	if (secureUri($controller, $method)) {
+		if (!isLoggedIn()) {
+			$controller = 'auth';
+			$method     = 'login';
+		}
 	}
 
 	$method = str_replace('-', '_', $method);

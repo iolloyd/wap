@@ -10,7 +10,7 @@ class config {
 	public static function read($section, $file){
 		try {
 			$env     = getAppEnv();
-			$config  = Spyc::YAMLLoad(self::getCfgDir() . '/' . $file.'.yml');
+			$config  = Spyc::YAMLLoad(CONFDIR . '/' . $file.'.yml');
 			$all = @$config['all'][$section] ?: array();
 			$env = @$config[$env][$section]  ?: array();
 			if (count($env)) {

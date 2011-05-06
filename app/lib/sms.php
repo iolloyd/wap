@@ -7,7 +7,7 @@ class sms extends ipx {
 	 * @return void
 	 */
 	public function __construct(){
-		$this->wsdl_file = 'sms.xml';
+		$this->wsdl_file = 'apis/sms.xml';
 		$this->init($this->wsdl_file);
 	}
 

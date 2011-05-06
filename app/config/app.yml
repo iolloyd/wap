@@ -1,0 +1,5 @@
+all:
+    access_log_file: /var/log/httpd/access_log
+    subscription_username: becomP-ES
+    subscription_password: Hn8R314a
+
