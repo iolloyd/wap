@@ -2,47 +2,24 @@
 class main extends controller {
 	var $layout = 'main';
 
+	public function index($request){
+		$this->template('main/index', array(
+		));
+	}
+
 	public function activatePost($request){
 		$phone    = helpers::cleanPhoneNumber($_REQUEST['phone']);
 		$sms      = new sms();
 		$response = $sms->sendSms($phone, config::read('free', 'messages'));
 	}
 
-	public function index($request){
-		$this->template('main/index', array(
-		));
-	}
-
 	/**
 	 * This is called when the user clicks the link in the email
 	 */
 	public function playwin($request){
-		/*
 		$ident = new ident();
 		$alias = $ident->getAliasForUser();
-		*/
 		$out   = $this->chargeUser();
-	}
-
-	/**
-	 * This is called after the user is redirected to IPX for ident 
-	 * and then IPX redirects them to us with the url 
-	 * provided by ourselves, which in this case is /main/ok.
-	 */
-	public function endident($request){
-		$details = config::read('defaults', 'ipx');
-		$user    = $details['username2'];
-		$pwd     = $details['password2'];
-		$status  = $this->checkStatus($user, $pwd);
-		if ($status->statusMessage == 'Authenticated') {
-			$out = $this->finalizeSession($user, $pwd);
-			if ($out->responseMessage == 'Success') {
-				$this->setConsumerId($out->consumerId);
-				echo 'going to attempt create sub and charge user';
-				$this->chargeUser();
-			}
-		} 
-
 	}
 
 	private function chargeUser($tariff_class = 'EUR300ES') {
@@ -53,35 +30,55 @@ class main extends controller {
 		$sub = new subscription();
 		$out = $this->createSubscriptionSession();
 		if ($out->responseMessage == 'Success'){
+			$this->setSubscriptionSessionId($out->sessionId);
 			header('Location: ' . $out->redirectURL);
 			exit();
 		}
 	}
 
 	public function chargeuser2(){
+		/*
 		$out = $this->finalizeSubscriptionSession();
-		echo 'auth finalize response:';
-		print_r($out); die;
-		$out = $this->authorizePayment($out);
-		$out = $this->capturePayment($out);
-	}
 
-	private function capturePayment($prev_step){
-		if (@$prev_step && $prev_step->responseMessage == 'Success') {
-			$sub = new subscription();
-			$out = $sub->capturePayment(array(
-				'username'  => $this->getSubscriptionUser(),
-				'password'  => $this->getSubscriptionPwd(),
-				'sessionId' => $this->getSessionId()
-			));
-			return $out;
+		if ($out->responseMessage !== 'Success') {
+			trigger_error("subscription: could not finalize subscription", E_USER_ERROR);
 		}
+
+		$out = $this->authorizePayment();
+
+		if ($out->responseMessage !== 'Success') {
+			trigger_error("subscription: could not authorize payment", E_USER_ERROR);
+		}
+
+		*/
+		$out = $this->capturePayment();
+
+		print_r($out);
+		if ($out->responseMessage !== 'Success') {
+			trigger_error("subscription: could not capture payment", E_USER_ERROR);
+		}
+
+		return $out;
 	}
 
-	/**
-	 * This request is initiated by the user in their terminal, but the actual 
-	 * request directly comes from the IPX servers as a GET request.
-	 */
+	private function capturePayment(){
+		$sub = new subscription();
+		$mock = array(
+			'username'  => $this->getSubscriptionUser(),
+			'password'  => $this->getSubscriptionPwd(),
+			'sessionId' => 'f43825228794ac94b75d'
+		);
+		$out = $sub->capturePayment($mock);
+		/*
+		$out = $sub->capturePayment(array(
+			'username'  => $this->getSubscriptionUser(),
+			'password'  => $this->getSubscriptionPwd(),
+			'sessionId' => $this->getSessionId()
+		));
+		*/
+		return $out;
+	}
+
 	public function terminateSubscription($request){
 		$sub      = new subscription();
 		$con_id   = helpers::cleanPhoneNumber($_GET['consumerId']);
@@ -93,30 +90,27 @@ class main extends controller {
 	}
 
 
-	/******************************
-	 * Private utility methods
-	 *****************************/
-	private function getConsumerId(){
-		return $this->r->get('consumer_id:'.session_id());
-	}
-
 	private function getSessionId(){
 		return $this->r->get('session:'.session_id());
-	}
-
-	private function setConsumerId($consumer_id){
-		$this->r->set('consumer_id:'.session_id(), $consumer_id);
 	}
 
 	private function setSessionId($session_id) {
 		$this->r->set('session:'.session_id(), $session_id);
 	}
 
+	private function setConsumerId($consumer_id){
+		$this->r->set('consumer_id:'.session_id(), $consumer_id);
+	}
+
+	private function getConsumerId(){
+		return $this->r->get('consumer_id:'.session_id());
+	}
+
 	private function sendInitialSms($phone) {
-		$msg      = config::read('free', 'messages');
-		$sms      = new sms();
-		$out      = $sms->sendSms($phone, $msg, 'EUR0ES');
-		$choice   = $out->responseMessage == 'Success';
+		$msg    = config::read('free', 'messages');
+		$sms    = new sms();
+		$out    = $sms->sendSms($phone, $msg, 'EUR0ES');
+		$choice = $out->responseMessage == 'Success';
 
 		$this->r->recordEvent('send_sms', $phone, $out);
 
@@ -130,9 +124,6 @@ class main extends controller {
 		));
 	}
 
-	/*******************************
-	 * Used by identification API
-	 ******************************/
 	private function checkStatus($user, $pwd){
 		$session_id = $this->r->get('session:'.session_id());
 		$ident      = new ident();
@@ -155,18 +146,16 @@ class main extends controller {
 		return $out;
 	}
 
-	/*******************************
-	 * Used by subscription API
-	 ******************************/
 	private function createSubscriptionSession($tariff_class='EUR300ES'){
 		$sub = new subscription();
 		$out = $sub->createSubscriptionSession(array(
-			'username'    => $this->getSubscriptionUser(),
-			'password'    => $this->getSubscriptionPwd(),
-			'consumerId'  => $this->getConsumerId(),
-			'sessionId'   => $this->getSessionId(),
-			'returnURL'   => $this->getSubscriptionSessionUrl(),
-			'tariffClass' => $tariff_class
+			'tariffClass'       => $this->getSubscriptionTariff(),
+			'returnURL'         => $this->getSubscriptionSessionUrl(),
+			'serviceName'       => $this->getServiceName(),
+			'frequencyInterval' => $this->getFrequencyInterval(),
+			'username'          => $this->getSubscriptionUser(),
+			'password'          => $this->getSubscriptionPwd(),
+			'sessionId'         => $this->getSessionId(),
 		));
 		$this->setSessionId($out->sessionId);
 		return $out;
@@ -179,20 +168,35 @@ class main extends controller {
 			'username'  => $this->getSubscriptionUser(),
 			'password'  => $this->getSubscriptionPwd()
 		));
+		$this->setConsumerIdForSubscriptionId($out);
 		return $out;
 	}
 
-	private function authorizePayment($prev_step){
-		if ($prev_step->responseMessage == 'Success'){
-			return $sub->authorizePayment(array(
-				'user'           => $this->getSubscriptionUser(),
-				'password'       => $this->getSubscriptionPwd(),
-				'consumerId'     => $this->getConsumerId(),
-				'subscriptionId' => $this->getSubscriptionId(),
-				'sessionId'      => $this->getSessionId(),
-				'tariffClass'    => $tariff_class
-			));
-		}
+	public function authorizePayment(){
+		$sub = new subscription();
+		$mock = array(
+			'username'       => $this->getSubscriptionUser(),
+			'password'       => $this->getSubscriptionPwd(),
+			'consumerId'     => '34659692355',//$this->getConsumerId(),
+			'subscriptionId' => '2-38890495',//$this->getSubscriptionId(),
+		);
+		return $sub->authorizePayment($mock);
+		/*
+		return $sub->authorizePayment(array(
+			'username'       => $this->getSubscriptionUser(),
+			'password'       => $this->getSubscriptionPwd(),
+			'consumerId'     => $this->getConsumerId(),
+			'subscriptionId' => $this->getSubscriptionId(),
+		));
+		*/
+	}
+
+	private function setSubscriptionSessionId($session_id){
+		return $this->r->set('subscription_session:'.session_id(), $session_id);
+	}
+
+	private function getSubscriptionSessionId(){
+		return $this->r->get('subscription_session:'.session_id());
 	}
 
 	private function getSubscriptionPwd(){
@@ -210,4 +214,33 @@ class main extends controller {
 		return $details['subscription_url'];
 	}
 
+	private function getFrequencyInterval(){
+		$details = config::read('defaults', 'ipx');
+		return $details['frequency_interval'];
+	}
+
+	private function getServiceName(){
+		$details = config::read('defaults', 'ipx');
+		return $details['service_name'];
+	}
+
+	private function setConsumerIdForSubscriptionId($out){
+		$this->r->set('consumer_id:'.$out->consumerId.':subscription_id', $out->subscriptionId);
+		$this->r->set('subscription_id:'.$out->subscriptionId.':consumer_id', $out->consumerId);
+		
+	}
+
+	private function getSubscriptionIdForConsumerId($consumer_id){
+		return $this->r->get('consumer_id:'.$consumer_id.':subscription_id');
+	}
+
+	private function getConsumerIdForSubscriptionId($subscription_id){
+		return $this->r->get('subscription_id:'.$subscription_id.':consumer_id');
+	}
+
+	private function getSubscriptionTariff(){
+		$details = config::read('defaults', 'ipx');
+		return $details['subscription_tariff'];
+	}
 }
+
