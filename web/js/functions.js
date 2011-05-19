@@ -1,15 +1,14 @@
 // JavaScript Document
 function blinking(){
-	$('.mensajeipads').fadeIn(250).fadeOut(250, function(){
-		blinking()
-	})
+	$('.mensajeipads').fadeIn(350).fadeOut(350, function(){ blinking() })
 }
 
 function WingameStart(){
 	$('.ipads').fadeIn(1000, function(){
 		blinking()
-	})
-	$('#box').delay(3000).animate({'left':'390px'}, 1000, function(){
+	});
+
+	$('#box').delay(1000).animate({'left':'390px'}, 1000, function(){
 		$('#siguiente').fadeIn(300)
 	})
 }

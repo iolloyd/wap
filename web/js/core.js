@@ -1,4 +1,6 @@
-var Ajax = {
+/*
+(function(){
+	var Ajax = {
 	ajaxob: function(){
 		return (window.XMLHttpRequest) 
             ? new XMLHttpRequest() 
@@ -18,7 +20,7 @@ var Ajax = {
 		ob.setRequestHeader( 'if-modified-since','wed, 16 jul 1970 00:00:00 gmt' );
 		var back = ob.send(null);
 	}
-}
+};
 
 Array.prototype.filter = function(f){
 	var f = (typeof(f) == 'function') ? f : f.fun();
@@ -540,4 +542,5 @@ var addLoadEvent = function(func){
 			}
 			func();
 		}
-}
+}})()
+*/

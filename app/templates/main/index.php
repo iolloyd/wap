@@ -9,27 +9,64 @@
   <div class="mensajeipads">Supera el tiempo de Manolito y llévate el iPad2 GRATIS</div>
   <form name="juganar" id="juganar" action="">
     <div id="step1">
+    
     <div id="box">
     	<div class="top"></div>
         <div class="content">
         	<h4>CONTESTA A LAS SIGUIENTES PREGUNTAS SOBRE ESPAÑA:</h4>
             <h5>Preguntas para evaluar el conocimiento sobre lugares, costumbres e historia de España</h5>
         	<table class="questions">
-				<? foreach ($questions as $index => $q): ?>
             	<tr>
-                	<td class="question"><?=$q['question']?>?</td>
+                	<td class="question">¿Cuál de estos países no tiene frontera con España?</td>
                     <td>
                     	<table class="answers">
                         	<tr>
-								<? foreach ($q['options'] as $option): ?>
-									<td><input type="radio" name="question<?=$index?>" value="<?=$option?>"></td>
-									<td><p><?=$option?></p></td>
-								<? endforeach ?>
+                            	<td><input type="radio" name="question1" value="francia"></td>
+                            	<td><p>Francia</p></td>
+                                <td><input type="radio" name="question1" value="andorra"></td>
+                                <td><p>Andorra</p></td>
+                                <td><input type="radio" name="question1" value="italia"></td>
+                                <td><p>Italia</p></td>
+                                <td><input type="radio" name="question1" value="portugal"></td>
+                                <td><p>Portugal</p></td>
                             </tr>
                         </table>
                     </td>
                 </tr>
-				<? endforeach ?>
+                <tr>
+                	<td class="question">¿Cuál es la segunda ciudad con más habitantes?</td>
+                    <td>
+                    	<table class="answers">
+                        	<tr>
+                            	<td><input type="radio" name="question2" value="barcelona"></td>
+                            	<td><p>Barcelona</p></td>
+                                <td><input type="radio" name="question2" value="bilbao"></td>
+                                <td><p>Bilbao</p></td>
+                                <td><input type="radio" name="question2" value="zaragoza"></td>
+                                <td><p>Zaragoza</p></td>
+                                <td><input type="radio" name="question2" value="valencia"></td>
+                                <td><p>Valencia</p></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                	<td class="question">¿Cuál es el río con mayor recorrido dentro de España?</td>
+                    <td>
+                    	<table class="answers">
+                        	<tr>
+                            	<td><input type="radio" name="question3" value="tajo"></td>
+                            	<td><p>Tajo</p></td>
+                                <td><input type="radio" name="question3" value="ebro"></td>
+                                <td><p>Ebro</p></td>
+                                <td><input type="radio" name="question3" value="duero"></td>
+                                <td><p>Duero</p></td>
+                                <td><input type="radio" name="question3" value="guadalquivir"></td>
+                                <td><p>Guadalquivir</p></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
             </table>
         </div>
         <div class="bottom"></div>
@@ -53,8 +90,8 @@
                     <td>
                     	<table class="answers">
                         	<tr>
-                            	<td><a href="#" class="seloperador" rel="vodafone"><img src="images/vodafone.png" width="46" height="46" alt="vodafone" /></a></td>	
-                                <td><a href="#" class="seloperador" rel="orange"><img src="images/orange.png" width="46" height="46" alt="orange" /></a></td>
+                            	<td><a href="#" class="seloperador" rel="vodafone"><img src="/images/vodafone.png" width="46" height="46" alt="vodafone" /></a></td>	
+                                <td><a href="#" class="seloperador" rel="orange"><img src="/images/orange.png" width="46" height="46" alt="orange" /></a></td>
                                 <td><a href="#" class="seloperador" rel="movistar"><img src="images/movistar.png" width="46" height="46" alt="movistar" /></a></td>
                             </tr>
                         </table>
@@ -71,3 +108,8 @@
 </form>    
 </div>
 <div id="bottomPage"></div>
+<script type="text/javascript">
+$(document).ready(function(){
+	WingameStart()
+})
+</script>

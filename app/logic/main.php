@@ -3,8 +3,14 @@ class main extends controller {
 	var $layout = 'main';
 
 	public function index($request){
+		$qs = Config::read('questions', 'questions');
+		$nq = 2;
 		$this->template('main/index', array(
-			'questions' => Config::read('questions', 'questions')
+			'questions' => array(
+				'box'              => array_slice($qs, 0        , $nq),
+				'box2'             => array_slice($qs, $nq      , $nq),
+				'finallyquestions' => array_slice($qs, $nq + $nq, $nq)
+			)
 		));
 	}
 
