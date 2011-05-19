@@ -1,4 +1,4 @@
-Ajax = {
+var Ajax = {
 	ajaxob: function(){
 		return (window.XMLHttpRequest) 
             ? new XMLHttpRequest() 
@@ -8,7 +8,7 @@ Ajax = {
         var async = async || true;
 		var ob = Ajax.ajaxob();
 		ob.onreadystatechange = function(){
-            if((ob.readyState == 4) && 
+            if ((ob.readyState == 4) && 
                (ob.status == 200)
             ){
 				return f(ob.responseText);
@@ -42,28 +42,30 @@ Array.prototype.iter = function(f){
 Array.prototype.map = function(f){
 	var f = (typeof(f) == 'function') ? f : f.fun();
 	var out = [];
-	for (var i=0, len=this.length; val=this[i], i < len; i++) 
+	for (var i=0, len=this.length; val=this[i], i < len; i++) {
 		out.push(f(val));
+	}
 	return out;
 }
 
 Array.prototype.reduce = function(f){
 	var f = (typeof(f) == 'function') ? f : f.fun();
 	var out = [];
-	for (var i=0, len=this.length; val=this[i], i < len; i++)
-		out = f(val,out);
+	for (var i=0, len=this.length; v=this[i], i<len; i++){
+		out = f(v, out);
+	}
 	return out;
 }
 
 Array.prototype.tail = function(){
-    if (this.length < 1) return false;
+    if (this.length < 1) {
+		return false;
+	}
     return this.slice(1);
 }
 
 var Css = {
-  
 	'removeClassName': function(e,t) {
-
 		if (typeof e == "string") e = $(e);
 		var ec = ' ' + e.className.replace(/^s*|s*$/g,'') + ' ';
 		var nc = ec;
@@ -84,7 +86,7 @@ Debug = {
     debug: function(message,clear){
         var c = clear || false
         var m = message || '';
-        if(!$('debugger')){
+        if (!$('debugger')){
             var dw=document.createElement('div');
             dw.setAttribute('id','debugger');
             dw.style.position='absolute';
@@ -102,14 +104,14 @@ Debug = {
 
 DataEvent = {
     tx: function(target,dtype,d){
-        if(typeof target == "string") 
+        if (typeof target == "string") 
             target = document.getElementById(target);
 
-        if(document.createEvent){
+        if (document.createEvent){
             var e = document.createEvent("Events");
             e.initEvent("dataready", true, false);
 
-        }else if(document.createEventObject){
+        }else if (document.createEventObject){
             var e = document.createEventObject();
         }
 
@@ -118,28 +120,17 @@ DataEvent = {
         e.datatype = dtype;
         e.data = d;
 
-        if(target.dispatchEvent) target.dispatchEvent(e);
-        else if(target.fireEvent) target.fireEvent("ondataready",e);
-
+        if (target.dispatchEvent) target.dispatchEvent(e);
+        else if (target.fireEvent) target.fireEvent("ondataready",e);
     },
+
     rx: function(target,worker){
-        if(typeof target == 'string') target = document.getElementById(target);
-        if(target.addEventListener)
+        if (typeof target == 'string') target = document.getElementById(target);
+        if (target.addEventListener)
             target.addEventListener("dataready",handler, false);
-        else if(target.attachEvent)
+        else if (target.attachEvent)
             target.attachEvent("ondataready",handler);
     }
-}
-
-function fire(id){
-	var ob = document.getElementById(id);
-	if (document.createEvent){
-		var ev = document.createEvent('MouseEvents');
-		ev.initEvent( action, true, false );
-		ob.dispatchEvent(ev);
-	}else if(document.createEventObject){
-		ob.fireEvent('on' + action);
-	}
 }
 
 Function.prototype.after = function(g){
@@ -162,15 +153,19 @@ Function.prototype.ready = function(){
 }
 
 Mouse = {
-    mousePos: function(e){
-        var e = e || window.event;
-            px = (e.pageX) ? e.pageX : e.clientX ? e.clientX + document.body.scrollLeft : 0;
-        py = (e.pageY) ? e.pageY : e.clientY ? e.clientY + document.body.scrollTop : 0;
-        return {x:px,y:py};
-    },
-    getPos:function(e){
-        var left = 0;
-        var top  = 0;
+	fire: function(id){
+		var ob = document.getElementById(id);
+		if (document.createEvent){
+			var ev = document.createEvent('MouseEvents');
+			ev.initEvent( action, true, false );
+			ob.dispatchEvent(ev);
+		}else if (document.createEventObject){
+			ob.fireEvent('on' + action);
+		}
+	},
+
+    getPos: function(e){
+        var left = 0, top  = 0;
         while(e.offsetParent){
             left += e.offsetLeft;
             top  += e.offsetTop;
@@ -179,7 +174,24 @@ Mouse = {
         left += e.offsetLeft;
         top  += e.offsetTop;
         return { x:left, y:top }
-    }
+    },
+
+    mousePos: function(e){
+        var e = e || window.event;
+        var px = (e.pageX) 
+				? e.pageX 
+				: (e.clientX 
+					? e.clientX + document.body.scrollLeft 
+					: 0);
+
+        var py = (e.pageY) 
+			? e.pageY 
+			: (e.clientY 
+				? e.clientY + document.body.scrollTop 
+				: 0);
+        return {x:px,y:py};
+    },
+
 }
 
 // Objects
@@ -208,7 +220,7 @@ Stream = {
         this.now = init;
         var me = this;
         e.listeners.push(function(v){
-            if(v != me.now){
+            if (v != me.now){
                 me.react(v); me.now = v;
             }
         });
@@ -254,7 +266,7 @@ String.prototype.camelize = function(){
 
 // Strings
 String.prototype.basename = function(){
-	if(this == '')return;
+	if (this == '')return;
 	var bits = this.split('\\');
 	return bits[bits.length-1];
 }
@@ -280,7 +292,7 @@ String.prototype.fun = function(){
 	var me = this;
 	var args = 'x';
 	var body = this;
-	if(this.indexOf('->') > -1){
+	if (this.indexOf('->') > -1){
 		var args = this.split('->')[0].replace(/ $/,'').replace(/ /g,',');
 		var body = this.split('->')[1];
 	}
@@ -308,7 +320,7 @@ String.prototype.humanize = function(){
 String.prototype.split = function(x, acc){
 	acc = acc || [];
 	var index = this.indexOf(x);
-	if(this.length < x.length || index < 0) return acc.concat(this);
+	if (this.length < x.length || index < 0) return acc.concat(this);
 	acc.push(this.slice(0,index));
 	var nstr = this.slice(this.indexOf(x) + x.length);
 	return nstr.split(x, acc);
@@ -325,7 +337,6 @@ var now = function(){
 }
 
 var Time = {
-
 	'curTime' : function(){
 		var cur = new Date();
 		return {
@@ -341,14 +352,18 @@ var Time = {
 		}
 	}
 }
-function doReady(lst){
+var doReady = function(lst){
 	lst.map("addLoadEvent(x)");
 }
-function pagex(ob){
-	return (ob.offsetParent) ? ob.offsetLeft + pagex(ob.offsetParent) : ob.offsetLeft;
+var pagex = function(ob){
+	return (ob.offsetParent) 
+		? ob.offsetLeft + pagex(ob.offsetParent) 
+		: ob.offsetLeft;
 }
-function pagey(ob){
-	return ob.offsetParent ? ob.offsetTop + (pagey(ob.offsetParent)) : ob.offsetTop;
+var pagey = function(ob){
+	return ob.offsetParent 
+		? ob.offsetTop + (pagey(ob.offsetParent)) 
+		: ob.offsetTop;
 }
 var Anim = {
     animclip: function(id,speed){
@@ -365,7 +380,7 @@ var Anim = {
             var b = endHeight - t;
             var r = endWidth - l; 
             $(id).style.clip = "rect("+t+"px "+r+"px "+b+"px "+l+"px)";
-            if((r-l) > endWidth+10) return;
+            if ((r-l) > endWidth+10) return;
             timer['reg'] = setInterval(function(){_anim(l,t,timer)},speed);
         }
         this.act = _anim(endWidth/2,endHeight/2,{'reg':0});
@@ -377,9 +392,9 @@ var Anim = {
             timer['reg'] && clearInterval(timer['reg']);
             var dt = (now() - st) / 1000;
             var x = f(b,dt,c,d);
-            if(rev) x = c - x;
+            if (rev) x = c - x;
             eval("$('"+e+"')."+a+"='"+x+"px';");
-            if(dt >= d) {
+            if (dt >= d) {
                 then && then();
                 return;
             }
@@ -389,25 +404,28 @@ var Anim = {
     },
 
     lin: function(b,t,c,d){ return c * t/d + b; },
+
     zin: function(b,t,c,d){return c*(t/=d)*t*t+b},
+
     zot: function(b,t,c,d){return(-c*(t/=d)*(t-2))+b},
+
     zio: function(b,t,c,d){
         return((t/=d/2) < 1) ? c/2*t*t+b : -c/2*((--t)*(t-2)-1)+b;
-    },
+    }
 }
-function $(x){ return	document.getElementById(x);}
 
 $A = function(x){
 	var a = [];
 	for(var i = 0;i < x.length;i++) a.push(x[i]);
 	return a;
 }
+
 function toArray(x){return $A(x)}
 
 $T = function(tag){ 
 	return $A(document.getElementsByTagName(tag)); }
 
-$C = function(c,xs){
+$C = function(c, xs){
 	var r = new RegExp("^" + c);
 	var xs = xs || $A(document.body.childNodes);
 	var found = [];
@@ -429,44 +447,55 @@ var $T = function(tag, root){
 
 var nextone = function(x,d){
 	var n = (d == 0) ? x.previousSibling : x.nextSibling;
-	if(!n) return false;
-	if(n.nodeType == 1) return n;
+	if (!n) return false;
+	if (n.nodeType == 1) return n;
 	return nextone(n,d)
 }
 
-var oneBefore = function (x){ return nextone(x,0); }
-var oneAfter = function (x){ return nextone(x,1); }
-var give = function (ctnr, stf){ ctnr.innerHTML = stf; }
+var oneBefore = function (x){ 
+	return nextone(x,0); 
+}
+
+var oneAfter = function (x){ 
+	return nextone(x,1); 
+}
+
+var give = function(ctnr, stf){ 
+	ctnr.innerHTML = stf; 
+}
 
 var addInts = function(x,y){
 	return parseInt(x) + parseInt(y);
 }
 
-var foldl = function(f, acc, lst){
-	if(lst == []) return false;
-	if(lst.length == 1) return acc;
-	return ( foldl(f, (f(acc, lst[0])), lst.slice(1)) )
+var fold = function(f, acc, lst){
+	for (var i=0, len=lst.length; x=lst[i]; i++) { 
+		acc = f(lst[i], acc);
+	}
+	return acc;
 }
-var foldr = function(f, acc, lst){
-	if(lst == []) return false;
-	if(lst.length == 1) return acc;
-	return f(lst[0], foldr(f,acc,lst.slice(1)));
-}
+
 var union = function(xs,ys){
 	var xs = xs.sort();
 	var ys = ys.sort();
 	var aux = function(xs,ys,acc){
 		// alert(xs + " " + ys);
-		if(!xs.length || !ys.length) return acc;
-		return (xs[0] < ys[0]) ? aux( xs.slice(1), ys, acc ) 
-		    : ((xs[0] > ys[0]) ? aux( xs, ys.slice(1), acc ) 
-		    :  aux( xs.slice(1), ys.slice(1), acc.concat(xs[0]) )); 
+		if (!xs.length || !ys.length) return acc;
+		return (xs[0] < ys[0]) 
+			? aux( xs.slice(1), ys, acc ) 
+		    : ((xs[0] > ys[0]) 
+				? aux( xs, ys.slice(1), acc ) 
+				:  aux( xs.slice(1), ys.slice(1), acc.concat(xs[0]) )); 
 	}
 	return aux(xs,ys,[]);
 }
 
-var toggle = function(thing){
-	if(thing) thing.style.display = (thing.style.display == '') ? 'none' : '';
+var toggle = function(x){
+	if (x) {
+		x.style.display = (x.style.display == '') 
+			? 'none' 
+			: '';
+	}
 }
 
 var splitlist = function (list, splits, property){
@@ -474,19 +503,20 @@ var splitlist = function (list, splits, property){
 	var curs = [];
 	list.iter(function(x){
 		var txt = x[property].replace(/ +$/,'');
-		if(splits.length > 0) 
-			if(txt == splits[0]){
+		if (splits.length > 0) {
+			if (txt == splits[0]){
 				group.push(curs);
 				curs = [x];
 				splits = splits.slice(1);
 			}else{
 				curs.push(x);
 			}
+		}
 	});
 	return group;
 }
 
-function getstyle(x,s){
+var getstyle = function(x,s){
 	var attr = camelize(s);
 	var y = (x.currentStyle) 
         ?  x.currentStyle[attr] 
@@ -494,7 +524,7 @@ function getstyle(x,s){
 	return y;
 }
 
-function rounded(n,d){
+var rounded = function(n,d){
 	var d = d || 2;
 	var num = Math.round(n * Math.pow(10,d)) / Math.pow(10,d);
 	return num;

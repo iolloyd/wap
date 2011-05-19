@@ -9,11 +9,11 @@ all:
         destinationAddress   : none
         userData             : ""
         userDataHeader       : "#NULL#"
-        DCS                  : -1 
+        DCS                  : -1
         PID                  : -1
         relativeValidityTime : -1
         deliveryTime         : "#NULL#"
-        #statusReportFlags    : 1
+        #statusReportFlags   : 1
         statusReportFlags    : 0
         accountName          : "BusinessConnect_LocalTime"
         tariffClass          : EUR300
@@ -24,16 +24,19 @@ all:
         serviceCategory      : "#NULL#"
         serviceMetaData      : "#NULL#"
         language             : "#NULL#"
-        username2             : "becomP-ES"
-        password2             : "Hn8R314a"
-        username            : "becomM-ES"
-        password            : "A91F7nb3"
-        returnURL            : "http://juganar.com/main/endident"
-        redirectURL          : "http://juganar.com/main/endident"
+        username2            : "becomP-ES"
+        password2            : "Hn8R314a"
+        username             : "becomM-ES"
+        password             : "A91F7nb3"
+        returnURL            : "http://juganar.com/main/alias2"
+        redirectURL          : "http://juganar.com/main/alias2"
         host_sms_api         : "sms.xml"
         host_sub_api         : "sub.xml"
-        frequencyInterval    :  3
-        frequencyCount       :  1
+        frequencyInterval    : 3
+        frequencyCount       : 1
         eventCount           : 10
-        duration             : 10 
+        duration             : 10
         subscription_url     : "http://juganar.com/main/chargeuser2"
+        subscription_tariff  : "EUR300ES"
+        service_name         : "#NULL#"
+        frequency_interval   : 3

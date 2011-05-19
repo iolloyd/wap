@@ -71,8 +71,3 @@
 </form>    
 </div>
 <div id="bottomPage"></div>
-<script type="text/javascript">
-$(document).ready(function(){
-	WingameStart()
-})
-</script>

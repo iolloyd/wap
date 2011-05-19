@@ -4,6 +4,7 @@ class main extends controller {
 
 	public function index($request){
 		$this->template('main/index', array(
+			'questions' => Config::read('questions', 'questions')
 		));
 	}
 
@@ -52,7 +53,6 @@ class main extends controller {
 
 		*/
 		$out = $this->capturePayment();
-
 		print_r($out);
 		if ($out->responseMessage !== 'Success') {
 			trigger_error("subscription: could not capture payment", E_USER_ERROR);

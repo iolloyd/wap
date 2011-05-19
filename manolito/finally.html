@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Untitled Document</title>
+<link href="css/styles.css" rel="stylesheet" type="text/css" media="all" />
+<script src="js/jquery.js"></script>
+<script src="js/functions.js"></script>
+</head>
+
+<body>
+
+<div id="header">
+	<div class="contentHeader">
+    </div>
+</div>
+
+<div id="page">
+  <div class="manolito"></div>
+  <div class="ipads"></div>
+  <form name="juganar" id="juganar" action="">
+    <div id="step1">
+    
+    <div id="finallystep">
+    	<div class="top"></div>
+        <div class="content">
+        	<h4>VALIDANDO EL CÓDIGO DE PARTICIPACIÓN:</h4>
+            <h5>Por favor, espera unos segundos y continua contestando las preguntas.</h5>
+            <div class="loader"></div>
+            <p class="small">En unos instantes serás redirigido al cuestionario y podrás comprobar si realmente eres más listo que Manolito. </p>
+        </div>
+        <div class="bottom"></div>
+    </div>
+    
+	<div id="finallyquestions">
+    	<div class="top"></div>
+        <div class="content">
+        	<h4>CONTESTA A LAS SIGUIENTES PREGUNTAS SOBRE INVENTOS:</h4>
+            <h5>Detalles y preguntas sobre las cosas más curiosas que te puedas imaginar. El saber no ocupa lugar.</h5>
+			<table class="questions">
+            	<tr>
+                	<td class="question">¿En qué año se inventó la máquina de coser?</td>
+                    <td>
+                    	<table class="answers">
+                        	<tr>
+                            	<td><input type="radio" name="question4" value="1851"></td>
+                            	<td><p>1851</p></td>
+                                <td><input type="radio" name="question4" value="1855"></td>
+                                <td><p>1855</p></td>
+                                <td><input type="radio" name="question4" value="1860"></td>
+                                <td><p>1860</p></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                	<td class="question">¿En qué siglo aparecieron las primeras lavadoras?</td>
+                    <td>
+                    	<table class="answers">
+                        	<tr>
+                            	<td><input type="radio" name="question5" value="XV"></td>
+                            	<td><p>XV</p></td>
+                                <td><input type="radio" name="question5" value="XVI"></td>
+                                <td><p>XVI</p></td>
+                                <td><input type="radio" name="question5" value="XIX"></td>
+                                <td><p>XIX</p></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                	<td class="question">¿De qué año data el primer teléfono de Edison?</td>
+                    <td>
+                    	<table class="answers">
+                        	<tr>
+                            	<td><input type="radio" name="question6" value="1878"></td>
+                            	<td><p>1878</p></td>
+                                <td><input type="radio" name="question6" value="1879"></td>
+                                <td><p>1879</p></td>
+                                <td><input type="radio" name="question6" value="1890"></td>
+                                <td><p>1890</p></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="bottom"></div>
+    </div>
+    <input type="submit" class="siguiente" id="siguiente2" value="Enviar" style="display:none" />
+    </div>
+</form>    
+</div>
+<div id="bottomPage"></div>
+<script type="text/javascript">
+$(document).ready(function(){
+	finallystep()
+})
+</script>
+</body>
+</html>

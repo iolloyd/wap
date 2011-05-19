@@ -1,7 +1,10 @@
-(function( ) {
+(function() {
 	// Browser compatibility check
-    if (window.addEventListener) window.addEventListener("load", init, false);
-    else if (window.attachEvent) window.attachEvent("onload", init);
+    if (window.addEventListener) {
+		window.addEventListener("load", init, false)
+	} else if (window.attachEvent) { 
+		window.attachEvent("onload", init)
+	}
 
     function init() {
 		// Loop for each form

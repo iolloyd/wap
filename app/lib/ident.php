@@ -11,59 +11,67 @@ class ident extends ipx {
 	public function getAliasForUser(){
 		$details = config::read('defaults', 'ipx');
 		$out = $this->createSession($details);
-		echo '<pre>';
-		print_r($out); 
-		if (@$out->sessionId) {
-			$r = new dbredis();
-
-			// Set the session id for later calls
-			$r->set('session:'.session_id(), $out->sessionId);
-			$out = $this->checkStatus($details, $out);
-			print_r($out);
-			$out = $this->finalizeSession($details, $out);
-			print_r($out);
-			return $out;
-		}
 	}
 
-	public function initIdentitySession(){
-		$details = config::read('defaults', 'ipx');
-		$out     = $this->createSession($details);
+	public function chargeuser2(){
+		$out = $this->setSessionId($out->sessionId);
+		$out = $this->checkStatus();
+		if ($out->responseMessage !== 'Success') {
+			trigger_error("Failure with check status", E_USER_ERROR);
+		}
+		$out = $this->finalizeSession($details);
+		if ($out->responseMessage !== 'Success') {
+			trigger_error("Problem finalizing identification", E_USER_ERROR);
+		}
 		return $out;
 	}
 
 	private function createSession($details){
-		$overrides = array(
-			'returnURL' => $details['redirectURL'],
-			'username'  => $details['username2'],
-			'password'  => $details['password2']
-		);
-		return $this->makeCall('createSession', $overrides); 
+		return $this->makeCall('createSession', array(
+			'returnURL' => $this->getRedirectUrl(),
+			'username'  => $this->getUserName(),
+			'password'  => $this->getPassword()
+		));
 	}
 
-	private function checkStatus($details, $prev_step){
-		if ($prev_step->responseMessage == 'Success'){
-			$overrides = array(
-				'username'  => $details['username2'],
-				'password'  => $details['password2'],
-				'sessionId' => $prev_step->sessionId
-			);
-			return $this->makeCall('checkStatus', $overrides); 
-		}
+	private function checkStatus(){
+		return $this->makeCall('checkStatus', array(
+			'username'  => $this->getUserName(),
+			'password'  => $this->getPassword(),
+			'sessionId' => $this->getSessionId()
+		));
 	}
 
-	private function finalizeSession($details, $prev_step){
-		if ($prev_step->responseMessage == 'Success') {
-			echo 'finalizing ident.<br>';
-			$r = new dbredis();
-			$session_id = $r->get('session:'.session_id());
-			echo $session_id; die;
-			$overrides = array(
-				'username'  => $details['username2'],
-				'password'  => $details['password2'],
-				'sessionId' => $r->get('session:'.session_id()) 
-			);
-			return $this->makeCall('finalizeSession', $overrides); 
-		}
+	private function finalizeSession($details){
+		return $this->makeCall('finalizeSession', array(
+			'username'  => $this->getUserName(),
+			'password'  => $this->getPassword(),
+			'sessionId' => $this->getSessionId()
+		));
+	}
+
+	private function getSessionId(){
+	    $r = new dbredis();
+		return $r->get('session:'.session_id());
+	}
+
+	private function getRedirectUrl(){
+		$details = config::read('defaults', 'ipx');
+		return $details['redirectURL'];
+	}
+
+	private function getPassword(){
+		$details = config::read('defaults', 'ipx');
+		return $details['password2'];
+	}
+
+	private function getUserName(){
+		$details = config::read('defaults', 'ipx');
+		return $details['username2'];
+	}
+
+	private function setSessionId($session_id){
+	    $r = new dbredis();
+		return $r->set('session:'.session_id(), $session_id);
 	}
 }

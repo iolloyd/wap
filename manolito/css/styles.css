@@ -1,0 +1,92 @@
+@charset "UTF-8";
+/* CSS Document */
+
+* {margin:0; padding:0}
+html {margin:0; padding:0}
+a img {border:none; margin-right:5px;}
+
+body {font-family:Arial, Helvetica, sans-serif; background:#FFF url(../images/bg_body.jpg) top repeat-x}
+
+h4 {padding-left:30px; font-size:16px; display:block; font-weight:bold; text-shadow:1px 1px #FFF}
+h5 {padding-left:30px; padding-bottom:20px; font-size:12px; display:block; font-weight:bold; text-shadow:1px 1px #FFF}
+
+#header {width:100%; display:block; height:194px; background:#FFF url(../images/bg_header.jpg) top repeat-x}
+#header .contentHeader {width:996px; height:194px; display:block; margin:0 auto; background:url(../images/header.png)}
+
+#page {width:996px; height:560px; display:block; margin:0 auto; background:url(../images/bg_page.png) repeat-y; position:relative; z-index:1; overflow:visible}
+#page .manolito {width:425px; height:571px; display:block; background:url(../images/manolito.png) no-repeat; position:absolute; z-index:20; left:11px; top:0}
+#page .ipads {width:525px; height:268px; display:none; background:url(../images/ipads.jpg) no-repeat; position:absolute; z-index:6; left:430px; top:0}
+#page .mensajeipads {width:525px; height:268px; display:none; position:absolute; z-index:5; left:430px; top:300px; text-align:center; font-weight:bold; font-size:24px;}
+#page #box {width:590px; display:block; position:absolute; z-index:19; left:-999px; top:160px;}
+#page #box .top, #page #box2 .top {width:590px; height:32px; display:block; background:url(../images/topbox.png)}
+#page #box .content, #page #box2 .content {width:590px; display:block; min-height:250px; background:url(../images/centerbox.png) repeat-y}
+#page #box .bottom, #page #box2 .bottom {width:590px; height:25px; display:block; background:url(../images/bottombox.png)}
+#bottomPage {width:996px; height:22px; display:block; margin:0 auto; background:url(../images/bottom_page.png)}
+
+#page #box2 {width:590px; display:block; position:absolute; z-index:19; left:-999px; top:160px;}
+
+#step1, #step2 {position:relative; z-index:18; width:996px; height:550px; overflow:hidden;}
+
+#page #box .content table.questions {margin-left:30px; font-size:12px; vertical-align:top}
+#page #box .content table td.question {width:210px; text-transform:uppercase; height:50px;}
+#page #box .content table.answers { vertical-align:middle; margin-left:20px;}
+#page #box .content table.answers p {display:block; margin:0 10px 0 5px}
+
+#page #box2 .content table.questions {margin-left:30px; font-size:14px; vertical-align:top}
+#page #box2 .content table.questions input {padding:4px 8px; width:135px; border-radius:4px; -moz-border-radius:4px; -webkit-border-radius:4px; outline:none}
+
+p.note {display:block; text-align:center; font-size:12px; padding:10px 15px}
+
+/* login */
+#page #login {width:590px; display:block; position:absolute; z-index:19; left:-999px; top:160px;}
+#page #login .top {width:590px; height:32px; display:block; background:url(../images/topbox.png)}
+#page #login .content {width:590px; display:block; min-height:150px; background:url(../images/centerbox.png) repeat-y}
+#page #login .bottom {width:590px; height:25px; display:block; background:url(../images/bottombox.png)}
+
+table.password {width:400px; margin-left: 30px;}
+table.password td {padding:40px 0}
+table.password td input {padding:4px 8px; width:135px; border-radius:4px; -moz-border-radius:4px; -webkit-border-radius:4px; outline:none}
+
+p.small {padding-left: 30px; padding-right:30px; font-size:12px; text-align:left;}
+p#condiciones {position:absolute; z-index:2; top:500px; left:450px; color:#999!important; display:none;}
+p#condiciones a {color:#999; text-decoration:none;}
+
+/* buttons */
+a.siguiente {width:145px; height:46px; display:block; background:url(../images/btn_siguiente.jpg); text-align:center; color:#FFF; text-shadow:1px 1px #000; text-decoration:none; line-height:2.4em; font-size:18px; position:absolute; z-index:3; top:480px; left:825px;}
+a.siguiente:hover {color:#000; text-shadow:1px 1px #FFF}
+
+input.siguiente {width:145px; height:46px; display:block; background:url(../images/btn_siguiente.jpg); text-align:center; color:#FFF; text-shadow:1px 1px #000; text-decoration:none; line-height:2.4em; font-size:18px; position:absolute; z-index:3; top:480px; left:825px; cursor:pointer; border:none; }
+input.siguiente:hover {color:#000; text-shadow:1px 1px #FFF}
+
+input#submitlogin {width:145px; height:46px; display:block; background:url(../images/btn_siguiente.jpg); text-align:center; color:#FFF; text-shadow:1px 1px #000; text-decoration:none; line-height:2.4em; font-size:18px; position:absolute; z-index:3; top:380px; left:825px; cursor:pointer; border:none; }
+input#submitlogin:hover {color:#000; text-shadow:1px 1px #FFF}
+
+.cursor {width:61px; height:47px; display:none; background:url(../images/cursor.png); position:absolute; z-index:5; left:280px; top:100px;}
+.loader {width:220px; height:33px; display:block; background:url(../images/loader.gif); margin:20px auto}
+
+/* finally step */
+#page #finallystep {width:590px; display:block; position:absolute; z-index:19; left:-999px; top:160px;}
+#page #finallystep .top {width:590px; height:32px; display:block; background:url(../images/topbox.png)}
+#page #finallystep .content {width:590px; display:block; min-height:150px; background:url(../images/centerbox.png) repeat-y}
+#page #finallystep .bottom {width:590px; height:25px; display:block; background:url(../images/bottombox.png)}
+
+/* finally questions */
+#page #finallyquestions {width:590px; display:block; position:absolute; z-index:19; left:-999px; top:160px;}
+#page #finallyquestions .top {width:590px; height:32px; display:block; background:url(../images/topbox.png)}
+#page #finallyquestions .content {width:590px; display:block; min-height:150px; background:url(../images/centerbox.png) repeat-y}
+#page #finallyquestions .bottom {width:590px; height:25px; display:block; background:url(../images/bottombox.png)}
+#page #finallyquestions .content table.questions {margin-left:30px; font-size:12px; vertical-align:top}
+#page #finallyquestions .content table td.question {width:350px; text-transform:uppercase; height:50px;}
+#page #finallyquestions .content table.answers { vertical-align:middle; margin-left:20px;}
+#page #finallyquestions .content table.answers p {display:block; margin:0 10px 0 5px}
+
+/* calification */
+#page #calification {width:590px; display:block; position:absolute; z-index:19; left:390px; top:160px;}
+#page #calification .top {width:590px; height:32px; display:block; background:url(../images/topbox.png)}
+#page #calification .content {width:590px; display:block; min-height:150px; background:url(../images/centerbox.png) repeat-y}
+#page #calification .bottom {width:590px; height:25px; display:block; background:url(../images/bottombox.png)}
+#page #calification table.log {width:400px; margin:0 auto; padding-top:20px;}
+#page #calification table.log td.left {width:200px; text-align:right; padding-right:10px; font-size:14px;}
+#page #calification table.log td.right {width:200px; text-align:left; padding-left:10px; font-size:22px;}
+#page #calification h3.result {font-size:42px; color:#ffcc00; text-shadow:1px 1px #000; text-align:center}
+#page #calification p.resume {font-size:14px; padding:5px 20px; text-align:center}
