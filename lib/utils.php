@@ -67,6 +67,7 @@ function getControllerAndMethod(){
 	$vars = count($toks) > 2 ? explode('/', $toks[2]) : array();
 
 	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+		events::registerEvent('post');
 		$vars = $_POST;
 		$meth .= 'Post';
 	}
@@ -100,6 +101,12 @@ function runPlugins(){
 
 function run(){
 	list($controller, $method, $vars) = getControllerAndMethod();
+	events::registerEvents(array(
+		'controller' => $controller,
+		'method'     => $method,
+		'vars'       => $vars
+	));
+
 	$vars = array('vars' => $vars);
 
 	if (secureUri($controller, $method)) {

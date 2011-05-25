@@ -20,10 +20,10 @@ class helpers {
 
 	public static function generatePassword($len=4) {
 		$pwd     = "";
-		$choices = "2346789bcdfghjkmnpqrtvwxyzBCDFGHJKLMNPQRTVWXYZ";
-		$maxlen  = min($len, strlen($choices));
+		//$choices = "0123456789bcdfghjkmnpqrtvwxyzBCDFGHJKLMNPQRTVWXYZ";
+		$choices = "0123456789";
 		while (strlen($pwd) < $len) { 
-			$chr = substr($choices, mt_rand(0, $maxlen-1), 1);
+			$chr = substr($choices, mt_rand(0, strlen($choices)-1), 1);
 			if (!strstr($pwd, $chr)) { 
 				$pwd .= $chr;
 			}
