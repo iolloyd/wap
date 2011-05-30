@@ -44,20 +44,27 @@ class main extends controller {
 	}
 
 	public function chargeuser2(){
-		/*
 		$out = $this->finalizeSubscriptionSession();
 
 		if ($out->responseMessage !== 'Success') {
 			trigger_error("subscription: could not finalize subscription", E_USER_ERROR);
 		}
 
+        echo '<pre>finalize'; print_r($out);
+
 		$out = $this->authorizePayment();
+
+        echo '<pre>authorize'; print_r($out);
 
 		if ($out->responseMessage !== 'Success') {
 			trigger_error("subscription: could not authorize payment", E_USER_ERROR);
 		}
 
-		*/
+        if ($out->subscriptionStatusMessage !== 'Active') {
+            trigger_error("subscription: the consumer does not have an active subscription", E_USER_ERROR);
+        }
+
+        echo 'ok'; die;
 		$out = $this->capturePayment();
 		print_r($out);
 		if ($out->responseMessage !== 'Success') {
@@ -174,28 +181,30 @@ class main extends controller {
 			'username'  => $this->getSubscriptionUser(),
 			'password'  => $this->getSubscriptionPwd()
 		));
-		$this->setConsumerIdForSubscriptionId($out);
+		$this->setConsumerId($out->consumerId);
+        $this->setSubscriptionId($out->subscriptionId);
 		return $out;
 	}
 
 	public function authorizePayment(){
 		$sub = new subscription();
-		$mock = array(
-			'username'       => $this->getSubscriptionUser(),
-			'password'       => $this->getSubscriptionPwd(),
-			'consumerId'     => '34659692355',//$this->getConsumerId(),
-			'subscriptionId' => '2-38890495',//$this->getSubscriptionId(),
-		);
-		return $sub->authorizePayment($mock);
-		/*
 		return $sub->authorizePayment(array(
 			'username'       => $this->getSubscriptionUser(),
 			'password'       => $this->getSubscriptionPwd(),
 			'consumerId'     => $this->getConsumerId(),
 			'subscriptionId' => $this->getSubscriptionId(),
 		));
-		*/
 	}
+
+	private function setSubscriptionId($id){
+		return $this->r->set('subscription:'.session_id(), $id);
+	}
+
+    private function getSubscriptionId(){
+        $id = $this->r->get('subscription:'.session_id());
+        echo 'sub:'.$id.'<br>';
+        return $id;
+    }
 
 	private function setSubscriptionSessionId($session_id){
 		return $this->r->set('subscription_session:'.session_id(), $session_id);
