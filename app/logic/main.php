@@ -50,23 +50,13 @@ class main extends controller {
 			trigger_error("subscription: could not finalize subscription", E_USER_ERROR);
 		}
 
-        echo '<pre>finalize'; print_r($out);
-
 		$out = $this->authorizePayment();
-
-        echo '<pre>authorize'; print_r($out);
 
 		if ($out->responseMessage !== 'Success') {
 			trigger_error("subscription: could not authorize payment", E_USER_ERROR);
 		}
 
-        if ($out->subscriptionStatusMessage !== 'Active') {
-            trigger_error("subscription: the consumer does not have an active subscription", E_USER_ERROR);
-        }
-
-        echo 'ok'; die;
 		$out = $this->capturePayment();
-		print_r($out);
 		if ($out->responseMessage !== 'Success') {
 			trigger_error("subscription: could not capture payment", E_USER_ERROR);
 		}
