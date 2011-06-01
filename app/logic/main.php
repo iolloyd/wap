@@ -56,6 +56,7 @@ class main extends controller {
 			trigger_error("subscription: could not authorize payment", E_USER_ERROR);
 		}
 
+        $this->setSessionId($out->sessionId);
 		$out = $this->capturePayment();
 		if ($out->responseMessage !== 'Success') {
 			trigger_error("subscription: could not capture payment", E_USER_ERROR);
@@ -66,19 +67,11 @@ class main extends controller {
 
 	private function capturePayment(){
 		$sub = new subscription();
-		$mock = array(
-			'username'  => $this->getSubscriptionUser(),
-			'password'  => $this->getSubscriptionPwd(),
-			'sessionId' => 'f43825228794ac94b75d'
-		);
-		$out = $sub->capturePayment($mock);
-		/*
 		$out = $sub->capturePayment(array(
 			'username'  => $this->getSubscriptionUser(),
 			'password'  => $this->getSubscriptionPwd(),
 			'sessionId' => $this->getSessionId()
 		));
-		*/
 		return $out;
 	}
 
@@ -192,7 +185,6 @@ class main extends controller {
 
     private function getSubscriptionId(){
         $id = $this->r->get('subscription:'.session_id());
-        echo 'sub:'.$id.'<br>';
         return $id;
     }
 
