@@ -1,5 +1,6 @@
 <?php
 class ident extends ipx {
+
 	public function __construct($wsdl_spec='apis/ident.xml'){
 		parent::__construct($wsdl_spec);
 	}
