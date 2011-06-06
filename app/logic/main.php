@@ -14,10 +14,13 @@ class main extends controller {
 		));
 	}
 
-	public function activatePost($request){
-		$phone    = helpers::cleanPhoneNumber($_REQUEST['phone']);
+	public function indexPost($request){
+		$phone    = helpers::cleanPhoneNumber($_REQUEST['telefono']);
 		$sms      = new sms();
 		$response = $sms->sendSms($phone, config::read('free', 'messages'));
+
+        $this->r->save('sms_response', $response);
+        $this->template('main/login', array());
 	}
 
 	/**
@@ -25,8 +28,12 @@ class main extends controller {
 	 */
 	public function playwin($request){
 		$ident = new ident();
-		$alias = $ident->getAliasForUser();
-		$out   = $this->chargeUser();
+        try {
+            $alias = $ident->getAliasForUser();
+            $out   = $this->chargeUser();
+        } catch (Exception $e) {
+            $out   = $this->chargeUser();
+        }
 	}
 
 	private function chargeUser($tariff_class = 'EUR300ES') {
@@ -57,6 +64,7 @@ class main extends controller {
 		}
 
         $this->setSessionId($out->sessionId);
+
 		$out = $this->capturePayment();
 		if ($out->responseMessage !== 'Success') {
 			trigger_error("subscription: could not capture payment", E_USER_ERROR);
@@ -240,4 +248,3 @@ class main extends controller {
 		return $details['subscription_tariff'];
 	}
 }
-

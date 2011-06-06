@@ -7,7 +7,7 @@
   <div class="manolito"></div>
   <div class="ipads"></div>
   <div class="mensajeipads">Supera el tiempo de Manolito y llévate el iPad2 GRATIS</div>
-  <form name="juganar" id="juganar" action="">
+  <form name="juganar" id="juganar" action="" method="POST">
     <div id="step1">
     
     <div id="box">
@@ -86,7 +86,9 @@
                     </td>
                 </tr>
                 <tr>
-                	<td width="220"><label>¿Cuál es tu operador?</label></td>
+                	<td width="220">
+                        <label>¿Cuál es tu operador?</label>
+                    </td>
                     <td>
                     	<table class="answers">
                         	<tr>

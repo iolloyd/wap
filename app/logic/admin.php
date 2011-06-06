@@ -188,4 +188,51 @@ class admin extends controller{
 		$this->r->saveHash('translation', $key, $_POST);
 		$this->call('/admin/translations', $request);
 	}
+
+	public function showgraph($request, $defaults=array()){
+        $key = $_GET['key'];
+        $zset_data = $this->r->zrange($key, 0, -1, array('withscores' => true));
+		list($datii, $labels) = $this->getDatiiAndLabels($zset_data);
+        $datii  = "['" . implode("','", $datii)  . "']";
+        $labels = "['" . implode("','", $labels) . "']"; 
+
+        if ($defaults == array()) {
+            $defaults = $this->getGraphDefaults();
+        }
+        $this->template('admin/show_graph', array(
+            'datii'                   => $datii,
+            'labels'                  => $labels,
+
+            'background_bar_colour_1' => $defaults['background_bar_colour_1'],
+            'background_bar_colour_2' => $defaults['background_bar_colour_2'],
+            'background_grid_colour'  => $defaults['background_grid_colour'],
+            'horizontal_margin'       => $defaults['horizontal_margin'],
+            'left_gutter'             => $defaults['left_gutter'],
+            'line_width'              => $defaults['line_width'],
+            'colours'                 => $defaults['colours'],
+            'filled'                  => $defaults['filled']
+        ));
+    }
+
+    private function getDatiiAndLabels($pairs){
+        echo '<pre>'; print_r($pairs); die;
+        $pairs = array_values($pairs);
+        $datii  = array_map(function($x){ return $x[0]; }, $pairs);
+        $labels = array_map(function($x){ return $x[1]; }, $pairs); 
+        return array($datii, $labels);
+    }
+
+    private function getGraphDefaults(){
+        $defaults = array(
+            'background_bar_colour_1' => "rgba(255,255,255,1)",
+            'background_bar_colour_2' => "rgba(255,255,255,1)",
+            'background_grid_colour'  => "rgba(235,235,235,1)", 
+            'colours'                 => "['rgba(255, 0, 0, 1)', 'rgba(0, 255, 0, 1)]",
+            'filled'                  => true,
+            'horizontal_margin'       => 5,
+            'line_width'              => 1,
+            'left_gutter'             => 40
+        );
+        return $defaults;
+    }
 }

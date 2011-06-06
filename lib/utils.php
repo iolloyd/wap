@@ -106,18 +106,14 @@ function run(){
 		'method'     => $method,
 		'vars'       => $vars
 	));
-
 	$vars = array('vars' => $vars);
-
 	if (secureUri($controller, $method)) {
 		if (!isLoggedIn()) {
 			$controller = 'auth';
 			$method     = 'login';
 		}
 	}
-
 	$method = str_replace('-', '_', $method);
-
 	define("CONTROLLER", $controller);
 	define("METHOD",     $method);
 	runPlugins();

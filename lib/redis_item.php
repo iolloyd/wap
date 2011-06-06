@@ -1,4 +1,6 @@
 <?php
+require_once('dbredis.php');
+
 class redis_item {
     protected $id;
     protected $data;
@@ -39,8 +41,6 @@ class redis_item {
         $incr_key = 'uniq_id:' . __CLASS__ ; 
         return $this->r->incr($incr_key);
     }
-
-
 
 }
 

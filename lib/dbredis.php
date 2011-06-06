@@ -183,6 +183,14 @@ class dbredis {
 		return $evts;
 	}
 
+    public function save($collection, $data) {
+		$data              = helpers::convertStdToArray($data);
+        $id  = $this->r->incr('nextid:'.$collection);
+        $key = $collection.':'.$id;
+        $this->r->hmset($key, $data);
+        $this->r->sadd('set:'.$collection, $id);
+    }
+
 	public function saveReverse($key, $value, $prefix='') {
 		if ($prefix) {
 			$key   = $pre.':'.$key;
