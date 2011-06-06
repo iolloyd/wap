@@ -5,6 +5,8 @@ class main extends controller {
 	public function index($request){
 		$qs = Config::read('questions', 'questions');
 		$nq = 2;
+        $this->template('main/simple', array());
+        /*
 		$this->template('main/index', array(
 			'questions' => array(
 				'box'              => array_slice($qs, 0        , $nq),
@@ -12,15 +14,16 @@ class main extends controller {
 				'finallyquestions' => array_slice($qs, $nq + $nq, $nq)
 			)
 		));
+        */
 	}
 
 	public function indexPost($request){
 		$phone    = helpers::cleanPhoneNumber($_REQUEST['telefono']);
 		$sms      = new sms();
 		$response = $sms->sendSms($phone, config::read('free', 'messages'));
-
         $this->r->save('sms_response', $response);
-        $this->template('main/login', array());
+        //$this->template('main/login', array());
+        $this->template('main/simple', array());
 	}
 
 	/**
@@ -54,13 +57,17 @@ class main extends controller {
 		$out = $this->finalizeSubscriptionSession();
 
 		if ($out->responseMessage !== 'Success') {
-			trigger_error("subscription: could not finalize subscription", E_USER_ERROR);
+            $this->template('main/error', array('error' => 
+                "Could not finalize subscription");
+            ));
 		}
 
 		$out = $this->authorizePayment();
 
 		if ($out->responseMessage !== 'Success') {
-			trigger_error("subscription: could not authorize payment", E_USER_ERROR);
+            $this->template('main/error', array('error' => 
+                "Could not authorize payment");
+            ));
 		}
 
         $this->setSessionId($out->sessionId);
