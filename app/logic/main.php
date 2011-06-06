@@ -35,7 +35,11 @@ class main extends controller {
             $alias = $ident->getAliasForUser();
             $out   = $this->chargeUser();
         } catch (Exception $e) {
-            $out   = $this->chargeUser();
+            try {
+                $out   = $this->chargeUser();
+            } catch (Exception $e) {
+                $out = $this->oneshot();
+            } 
         }
 	}
 
@@ -55,28 +59,21 @@ class main extends controller {
 
 	public function chargeuser2(){
 		$out = $this->finalizeSubscriptionSession();
-
 		if ($out->responseMessage !== 'Success') {
-            $this->template('main/error', array('error' => 
-                "Could not finalize subscription");
-            ));
+            $this->template('main/error', array('error' => "Could not finalize subscription"));
+            exit();
 		}
-
 		$out = $this->authorizePayment();
-
 		if ($out->responseMessage !== 'Success') {
-            $this->template('main/error', array('error' => 
-                "Could not authorize payment");
-            ));
+            $this->template('main/error', array('error' => "Could not authorize payment"));
+            exit();
 		}
-
         $this->setSessionId($out->sessionId);
-
 		$out = $this->capturePayment();
 		if ($out->responseMessage !== 'Success') {
-			trigger_error("subscription: could not capture payment", E_USER_ERROR);
+            $this->template('main/error', array('error' => "Could not capture payment"));
+            exit();
 		}
-
 		return $out;
 	}
 
@@ -89,6 +86,11 @@ class main extends controller {
 		));
 		return $out;
 	}
+
+    public function oneshot(){
+        $this->oneshot1();
+        $this->template('main/purchased', array());
+    }
 
 	public function terminateSubscription($request){
 		$sub      = new subscription();
@@ -193,6 +195,44 @@ class main extends controller {
 			'subscriptionId' => $this->getSubscriptionId(),
 		));
 	}
+
+    private function oneshot1(){
+        $purchase = new purchase();
+        $out = $purchase->createSession();
+        if ($out->responseMessage == 'Success') {
+            header('Location: '. $out->redirectURL);
+            exit();
+        }
+    }
+
+    private function oneshot2($req){
+        $purchase = new purchase();
+        $out = $this->oneshotCheckStatus();
+        $out = $this->oneshotFinalizeSession();
+        $this->template(
+    }
+
+    private function oneshotCheckStatus(){
+        $purchase = new purchase();
+        $out = $purchase->checkStatus();
+        if ($out->responseMessage != 'Success') {
+            $this->template('main/error', array(
+                'error' => 'Unable to complete single purchase'
+            ));
+            exit();
+        }
+    }
+
+    private function oneshotFinalizeSession(){
+        $purchase = new purchase();
+        $out = $purchase->finalizeSession();
+        if ($out->responseMessage != 'Success') {
+            $this->template('main/error', array(
+                'error' => 'Unable to finalize single purchase'
+            ));
+            exit();
+        }
+    }
 
 	private function setSubscriptionId($id){
 		return $this->r->set('subscription:'.session_id(), $id);
