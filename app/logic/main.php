@@ -177,7 +177,7 @@ class main extends controller {
 	private function finalizeSubscriptionSession(){ 
 		$sub = new subscription();
 		$out = $sub->finalizeSubscriptionSession(array(
-			'sessionId' => $this->getSessionId(),
+			'sessionId' => $this->getSubscriptionSessionId(),
 			'username'  => $this->getSubscriptionUser(),
 			'password'  => $this->getSubscriptionPwd()
 		));
@@ -209,7 +209,7 @@ class main extends controller {
         $purchase = new purchase();
         $out = $this->oneshotCheckStatus();
         $out = $this->oneshotFinalizeSession();
-        $this->template(
+        $this->template('main/simple');
     }
 
     private function oneshotCheckStatus(){
