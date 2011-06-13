@@ -37,7 +37,6 @@ class main extends controller {
         $this->template('main/simple', array());
 	}
 
-
 	public function indexPost($request){
 		$phone    = helpers::cleanPhoneNumber($_REQUEST['telefono']);
 		$sms      = new sms();
@@ -59,17 +58,15 @@ class main extends controller {
 	}
     public function tryToChargeUser(){
         try {
-            $out   = $this->chargeUser();
+             $this->chargeUser();
             echo 'id and charged';
         } catch (Exception $e) {
             try {
-                echo '<pre>';
-                echo $e->getMessage();
-                $out   = $this->chargeUser();
-                echo 'charged';
-            } catch (Exception $e) {
-                $out = $this->oneshot();
+                echo '...that failed, trying one-shot';
+                $this->oneshot();
                 echo 'oneshot';
+            } catch (Exception $e) {
+                echo 'one-shot failed.';
             } 
         }
     }
@@ -109,7 +106,7 @@ class main extends controller {
     /////////////////////
 
 	private function capturePayment(){
-        //die('here we capture payment');
+        die('here we capture payment');
 		$sub = new subscription();
 		$out = $sub->capturePayment(array(
 			'username'  => $this->getSubscriptionUser(),
@@ -124,16 +121,26 @@ class main extends controller {
 	}
 	private function chargeUser($tariff_class = 'EUR300ES') {
 		$sub = new subscription();
-        try {
-            $out = $this->createSubscriptionSession();
-			$this->setSubscriptionSessionId($out->sessionId);
-			header('Location: ' . $out->redirectURL);
-			exit();
-		} catch (Exception $e) { 
-            echo $e->getMessage();
-            exit();
+        if ($this->isKnown()) {
+            $this->authorizePayment();
+            $this->capturePayment();
+        } else {
+            try {
+                $out = $this->createSubscriptionSession();
+                $this->setSessionId($out->sessionId);
+                header('Location: ' . $out->redirectURL);
+                exit();
+            } catch (Exception $e) { 
+                echo $e->getMessage();
+                exit();
+            }
         }
 	}
+
+    private function isKnown(){
+        return $this->r->get('known:'.session_id());
+    }
+
 	private function checkStatus($user, $pwd){
 		$session_id = $this->r->get('session:'.session_id());
 		$ident      = new ident();
@@ -175,7 +182,7 @@ class main extends controller {
 	private function finalizeSubscriptionSession(){ 
 		$sub = new subscription();
 		$out = $sub->finalizeSubscriptionSession(array(
-			'sessionId' => $this->getSubscriptionSessionId(),
+			'sessionId' => $this->getSessionId(),
 			'username'  => $this->getSubscriptionUser(),
 			'password'  => $this->getSubscriptionPwd()
 		));
@@ -206,9 +213,6 @@ class main extends controller {
         $id = $this->r->get('subscription:'.session_id());
         return $id;
     }
-	private function getSubscriptionSessionId(){
-		return $this->r->get('subscription_session:'.session_id());
-	}
 	private function getSubscriptionPwd(){
 		$details = config::read('defaults', 'ipx');
 		return $details['password2'];

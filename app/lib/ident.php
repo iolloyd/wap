@@ -29,6 +29,7 @@ class ident extends ipx {
 		if ($out->responseMessage !== 'Success') {
 			trigger_error("Problem finalizing identification", E_USER_ERROR);
 		}
+        print_r($out); die;
 		return $out;
 	}
 
@@ -41,19 +42,32 @@ class ident extends ipx {
 	}
 
 	private function checkStatus(){
-		return $this->makeCall('checkStatus', array(
+		$out = $this->makeCall('checkStatus', array(
 			'username'  => $this->getUserName(),
 			'password'  => $this->getPassword(),
 			'sessionId' => $this->getSessionId()
 		));
+        $key = 'known:'.session_id();
+        if($out->statusCode == 2) {
+            $this->r->set($key, 1);
+        } else {
+            $this->r->set($key, 0);
+        }
+        return $out;
 	}
 
-	private function finalizeSession(){
-		return $this->makeCall('finalizeSession', array(
+	private function finalizeSession($status_code=0){
+		$out = $this->makeCall('finalizeSession', array(
 			'username'  => $this->getUserName(),
 			'password'  => $this->getPassword(),
 			'sessionId' => $this->getSessionId()
 		));
+        if ($out->responseMessage == 'Success') {
+            if (in_array($status_code, array(0, 1, 2))) {
+                $this->r->sadd('subscribed', $out->consumerId); 
+            }
+        }
+        return $out;
 	}
 
 	private function getSessionId(){
