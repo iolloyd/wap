@@ -20,7 +20,7 @@ all:
         subscription_tariff  : EUR150
         VAT                  : -1
         referenceId          : "#NULL#"
-        serviceName          : "#NULL#"
+        serviceName          : "IPXWAP"
         serviceCategory      : "#NULL#"
         serviceMetaData      : "#NULL#"
         language             : "#NULL#"
@@ -32,11 +32,11 @@ all:
         redirectURL          : "http://juganar.com/main/alias2"
         host_sms_api         : "sms.xml"
         host_sub_api         : "sub.xml"
-        frequencyInterval    : 3
+        frequencyInterval    : 3 
         frequencyCount       : 1
-        eventCount           : 10
-        duration             : 10
+        eventCount           : 300 
+        duration             : 9999 
         subscription_url     : "http://juganar.com/main/chargeuser2"
         subscription_tariff  : "EUR300ES"
-        service_name         : "#NULL#"
+        service_name         : "IPXWAP"
         frequency_interval   : 3

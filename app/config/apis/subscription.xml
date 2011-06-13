@@ -133,8 +133,7 @@ targetNamespace="http://www.ipx.com/api/services/subscriptionapi31">
             type="xsd:int" />
             <xsd:element name="responseCode" type="xsd:int" />
             <xsd:element name="reasonCode" type="xsd:int" />
-            <xsd:element name="responseMessage"
-            type="xsd:string" />
+            <xsd:element name="responseMessage" type="xsd:string" />
             <xsd:element name="temporaryError"
             type="xsd:boolean" />
           </xsd:sequence>

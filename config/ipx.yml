@@ -19,7 +19,7 @@ all:
         subscription_tariff  : EUR150
         VAT                  : -1
         referenceId          : "#NULL#"
-        serviceName          : "#NULL#"
+        serviceName          : "IPXWAP"
         serviceCategory      : "#NULL#"
         serviceMetaData      : "#NULL#"
         language             : "#NULL#"

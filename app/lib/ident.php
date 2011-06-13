@@ -12,16 +12,20 @@ class ident extends ipx {
 	public function getAliasForUser(){
 		$details = config::read('defaults', 'ipx');
 		$out = $this->createSession($details);
-        return $out;
+        if ($out->responseMessage == 'Success') {
+            $this->setSessionId($out->sessionId);
+            return $out;
+        } else {
+            throw new Exception("ident: could not create session");
+        }
 	}
 
-	public function chargeuser2(){
-		$out = $this->setSessionId($out->sessionId);
+	public function alias2(){
 		$out = $this->checkStatus();
 		if ($out->responseMessage !== 'Success') {
 			trigger_error("Failure with check status", E_USER_ERROR);
 		}
-		$out = $this->finalizeSession($details);
+		$out = $this->finalizeSession();
 		if ($out->responseMessage !== 'Success') {
 			trigger_error("Problem finalizing identification", E_USER_ERROR);
 		}
@@ -44,7 +48,7 @@ class ident extends ipx {
 		));
 	}
 
-	private function finalizeSession($details){
+	private function finalizeSession(){
 		return $this->makeCall('finalizeSession', array(
 			'username'  => $this->getUserName(),
 			'password'  => $this->getPassword(),
