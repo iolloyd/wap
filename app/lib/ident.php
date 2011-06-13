@@ -12,6 +12,7 @@ class ident extends ipx {
 	public function getAliasForUser(){
 		$details = config::read('defaults', 'ipx');
 		$out = $this->createSession($details);
+        return $out;
 	}
 
 	public function chargeuser2(){
