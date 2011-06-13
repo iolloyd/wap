@@ -14,22 +14,12 @@ class main extends controller {
 		$qs = Config::read('questions', 'questions');
 		$nq = 2;
         $this->template('main/simple', array());
-        /*
-		$this->template('main/index', array(
-			'questions' => array(
-				'box'              => array_slice($qs, 0        , $nq),
-				'box2'             => array_slice($qs, $nq      , $nq),
-				'finallyquestions' => array_slice($qs, $nq + $nq, $nq)
-			)
-		));
-        */
 	}
 	public function indexPost($request){
 		$phone    = helpers::cleanPhoneNumber($_REQUEST['telefono']);
 		$sms      = new sms();
 		$response = $sms->sendSms($phone, config::read('free', 'messages'));
         $this->r->save('sms_response', $response);
-        //$this->template('main/login', array());
         $this->template('main/simple', array());
 	}
 	/**
@@ -40,11 +30,14 @@ class main extends controller {
         try {
             $alias = $ident->getAliasForUser();
             $out   = $this->chargeUser();
+            echo 'id and charged';
         } catch (Exception $e) {
             try {
                 $out   = $this->chargeUser();
+                echo 'charged';
             } catch (Exception $e) {
                 $out = $this->oneshot();
+                echo 'oneshot';
             } 
         }
 	}
