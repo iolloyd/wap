@@ -106,7 +106,7 @@ class main extends controller {
     /////////////////////
 
 	private function capturePayment(){
-        die('here we capture payment');
+        //die('here we capture payment');
 		$sub = new subscription();
 		$out = $sub->capturePayment(array(
 			'username'  => $this->getSubscriptionUser(),
@@ -121,7 +121,7 @@ class main extends controller {
 	}
 	private function chargeUser($tariff_class = 'EUR300ES') {
 		$sub = new subscription();
-        if ($this->isKnown()) {
+        if ($this->isSubscriber($this->getCurrentConsumerId()){
             $this->authorizePayment();
             $this->capturePayment();
         } else {
@@ -137,10 +137,13 @@ class main extends controller {
         }
 	}
 
-    private function isKnown(){
-        return $this->r->get('known:'.session_id());
+    private function getCurrentConsumerId(){
+        return $this->r->get('consumer_id:'.session_id());
     }
 
+    private function isSubscriber($id){
+        return $this->r->sismember('subscribers', $id);
+    }
 	private function checkStatus($user, $pwd){
 		$session_id = $this->r->get('session:'.session_id());
 		$ident      = new ident();

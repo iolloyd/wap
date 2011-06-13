@@ -3,6 +3,7 @@ class ident extends ipx {
 
 	public function __construct($wsdl_spec='apis/ident.xml'){
 		parent::__construct($wsdl_spec);
+        $this->r = new dbredis();
 	}
 
 	public function __call($method, $overrides){
@@ -25,11 +26,11 @@ class ident extends ipx {
 		if ($out->responseMessage !== 'Success') {
 			trigger_error("Failure with check status", E_USER_ERROR);
 		}
-		$out = $this->finalizeSession();
+        $status_code = $out->statusCode;
+		$out = $this->finalizeSession($status_code);
 		if ($out->responseMessage !== 'Success') {
 			trigger_error("Problem finalizing identification", E_USER_ERROR);
 		}
-        print_r($out); die;
 		return $out;
 	}
 
@@ -56,15 +57,16 @@ class ident extends ipx {
         return $out;
 	}
 
-	private function finalizeSession($status_code=0){
+	private function finalizeSession($status_code){
 		$out = $this->makeCall('finalizeSession', array(
 			'username'  => $this->getUserName(),
 			'password'  => $this->getPassword(),
 			'sessionId' => $this->getSessionId()
 		));
+        $this->r->set('consumer_id:'.session_id(), $out->consumerId);
         if ($out->responseMessage == 'Success') {
             if (in_array($status_code, array(0, 1, 2))) {
-                $this->r->sadd('subscribed', $out->consumerId); 
+                $this->r->sadd('subscribers', $out->consumerId); 
             }
         }
         return $out;
