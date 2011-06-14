@@ -46,6 +46,7 @@ class main extends controller {
             echo 'ok, lets try to charge...<br>';
             try {
                 $this->tryToChargeUser();
+                $this->template('main/thanks');
             } catch (Exception $e) {
                 echo $e->getMessage();
                 die;
@@ -138,6 +139,9 @@ class main extends controller {
         }
 	}
 
+    /**
+     * The final method in the whole process.
+     */
 	private function capturePayment(){
         die('here we capture payment');
 		$sub = new subscription();
