@@ -61,7 +61,7 @@ class main extends controller {
      */
 	private function subscribeOrCharge($tariff_class = 'EUR300ES') {
 		$consumer_id = $this->getConsumerId();
-        if ($this->getStatus()){
+        if (in_array($this->getStatus(), array(1, 2))){
             $this->authorizePayment();
             $this->capturePayment();
         } else {
@@ -80,6 +80,7 @@ class main extends controller {
     public function getStatus(){
         return $this->r->get('status:'.session_id());
     }
+
     /**
      * This is the second computation once the user has
      * been identified by the IPX service
@@ -117,13 +118,13 @@ class main extends controller {
 
 	public function authorizePayment(){
 		$sub = new subscription();
-        //echo $this->getSubscriptionId(); die;
 		$out = $sub->authorizePayment(array(
 			'username'       => $this->getSubscriptionUser(),
 			'password'       => $this->getSubscriptionPwd(),
 			'consumerId'     => $this->getConsumerId(),
 			'subscriptionId' => $this->getSubscriptionId(),
 		));
+        print_r($out); die;
         if ($out->responseMessage == 'Success') {
             return $out;
         } else {
@@ -236,7 +237,6 @@ class main extends controller {
 
 	private function getServiceName(){
 		$details = config::read('defaults', 'ipx');
-		echo $details['service_name'];
 		return $details['service_name'];
 	}
 
@@ -299,7 +299,7 @@ class main extends controller {
     }
 
 	private function setConsumerId($consumer_id){
-		return $this->r->set('consumer_id:'.session_id(), $consumer_id);
+		return $this->r->set('consumerid:'.session_id(), $consumer_id);
 	}
 
 	private function setSessionId($session_id) {
