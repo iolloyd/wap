@@ -77,7 +77,7 @@ class main extends controller {
         }
 	}
 
-    public functon getStatus(){
+    public function getStatus(){
         return $this->r->get('status:'.session_id());
     }
     /**
