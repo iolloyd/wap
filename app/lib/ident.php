@@ -52,8 +52,7 @@ class ident extends ipx {
 			'sessionId' => $this->getSessionId()
 		));
         if ($out->responseMessage == "Success") {
-            $key = 'status_code:'.session_id();
-            $this->r->set($key, ($out->statusCode == 2));
+            $this->setStatus($out->statusCode);
             return $out;
         } else {
             throw new Exception("Ident: check status fail");
@@ -69,7 +68,7 @@ class ident extends ipx {
         if ($out->responseMessage == 'Success') {
             $this->setCurrentConsumer($out->consumerId);
             if (in_array($status_code, array(0, 1, 2))) {
-                $this->addSubscriber($id);
+                $this->addSubscriber($out->consumerId);
             }
         }
         return $out;
@@ -107,4 +106,8 @@ class ident extends ipx {
 	    $r = new dbredis();
 		return $r->set('session:'.session_id(), $session_id);
 	}
+
+    private function setStatus($code){
+        $this->r->set('status:'.session_id(), $code);
+    }
 }

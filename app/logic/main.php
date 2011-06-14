@@ -43,27 +43,15 @@ class main extends controller {
         $ident = new ident();
         $out   = $ident->alias2();
         if ($out->responseMessage == 'Success') {
-            echo 'ok, lets try to charge...<br>';
-            try {
-                $this->tryToChargeUser();
-                $this->template('main/thanks');
-            } catch (Exception $e) {
-                $this->template('main/oops');
-                die;
-            }
+            $this->tryToChargeUser();
+            $this->template('main/thanks');
+            //$this->template('main/oops');
         }
     }
 
     public function tryToChargeUser(){
-        try {
-             $this->subscribeOrCharge();
-        } catch (Exception $e) {
-            try {
-                $this->oneshot();
-            } catch (Exception $e) {
-                throw new Exception("All methods failed");
-            } 
-        }
+        $this->subscribeOrCharge();
+        //$this->oneshot();
     }
 
     /**
@@ -73,7 +61,7 @@ class main extends controller {
      */
 	private function subscribeOrCharge($tariff_class = 'EUR300ES') {
 		$consumer_id = $this->getConsumerId();
-        if ($this->isSubscriber($consumer_id)) {
+        if ($this->getStatus()){
             $this->authorizePayment();
             $this->capturePayment();
         } else {
@@ -89,6 +77,9 @@ class main extends controller {
         }
 	}
 
+    public functon getStatus(){
+        return $this->r->get('status:'.session_id());
+    }
     /**
      * This is the second computation once the user has
      * been identified by the IPX service
@@ -126,6 +117,7 @@ class main extends controller {
 
 	public function authorizePayment(){
 		$sub = new subscription();
+        //echo $this->getSubscriptionId(); die;
 		$out = $sub->authorizePayment(array(
 			'username'       => $this->getSubscriptionUser(),
 			'password'       => $this->getSubscriptionPwd(),
