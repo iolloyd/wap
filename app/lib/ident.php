@@ -1,6 +1,5 @@
 <?php
 class ident extends ipx {
-
 	public function __construct($wsdl_spec='apis/ident.xml'){
 		parent::__construct($wsdl_spec);
         $this->r = new dbredis();
@@ -12,8 +11,9 @@ class ident extends ipx {
 
 	public function getAliasForUser(){
 		$details = config::read('defaults', 'ipx');
-		$out = $this->createSession($details);
+		$out = $this->createSession();
         if ($out->responseMessage == 'Success') {
+            echo 'setting session id: '.$out->sessionId;
             $this->setSessionId($out->sessionId);
             return $out;
         } else {
@@ -22,24 +22,27 @@ class ident extends ipx {
 	}
 
 	public function alias2(){
-		$out = $this->checkStatus();
-		if ($out->responseMessage !== 'Success') {
-			trigger_error("Failure with check status", E_USER_ERROR);
-		}
-        $status_code = $out->statusCode;
-		$out = $this->finalizeSession($status_code);
-		if ($out->responseMessage !== 'Success') {
-			trigger_error("Problem finalizing identification", E_USER_ERROR);
-		}
-		return $out;
+        try {
+            $out = $this->checkStatus();
+            $out = $this->finalizeSession($out->statusCode);
+            return $out;
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            exit();
+        }
 	}
 
-	private function createSession($details){
-		return $this->makeCall('createSession', array(
+	private function createSession(){
+		$out = $this->makeCall('createSession', array(
 			'returnURL' => $this->getRedirectUrl(),
 			'username'  => $this->getUserName(),
 			'password'  => $this->getPassword()
 		));
+        if ($out->responseMessage == 'Success') {
+            return $out;
+        } else {
+            throw new Exception("Ident: could not create session");
+        }
 	}
 
 	private function checkStatus(){
@@ -48,13 +51,13 @@ class ident extends ipx {
 			'password'  => $this->getPassword(),
 			'sessionId' => $this->getSessionId()
 		));
-        $key = 'known:'.session_id();
-        if($out->statusCode == 2) {
-            $this->r->set($key, 1);
+        if ($out->responseMessage == "Success") {
+            $key = 'status_code:'.session_id();
+            $this->r->set($key, ($out->statusCode == 2));
+            return $out;
         } else {
-            $this->r->set($key, 0);
+            throw new Exception("Ident: check status fail");
         }
-        return $out;
 	}
 
 	private function finalizeSession($status_code){
@@ -63,14 +66,18 @@ class ident extends ipx {
 			'password'  => $this->getPassword(),
 			'sessionId' => $this->getSessionId()
 		));
-        $this->r->set('consumer_id:'.session_id(), $out->consumerId);
         if ($out->responseMessage == 'Success') {
+            $this->setCurrentConsumer($out->consumerId);
             if (in_array($status_code, array(0, 1, 2))) {
-                $this->r->sadd('subscribers', $out->consumerId); 
+                $this->addSubscriber($id);
             }
         }
         return $out;
 	}
+
+    private function addSubscriber($id){
+        $this->r->sadd('subscribers', $id); 
+    }
 
 	private function getSessionId(){
 	    $r = new dbredis();
@@ -91,6 +98,10 @@ class ident extends ipx {
 		$details = config::read('defaults', 'ipx');
 		return $details['username2'];
 	}
+
+    private function setCurrentConsumer($consumer_id){
+        $this->r->set('consumerid:'.session_id(), $consumer_id);
+    }
 
 	private function setSessionId($session_id){
 	    $r = new dbredis();
