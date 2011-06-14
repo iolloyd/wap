@@ -48,7 +48,7 @@ class main extends controller {
                 $this->tryToChargeUser();
                 $this->template('main/thanks');
             } catch (Exception $e) {
-                echo $e->getMessage();
+                $this->template('main/oops');
                 die;
             }
         }
