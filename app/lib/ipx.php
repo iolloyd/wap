@@ -5,6 +5,7 @@ class ipx {
 			  $wsdl_file;
 
 	public function __construct($wsdl_file){
+		$this->r = new dbredis();
 		$this->init($wsdl_file);
 	}
 
@@ -45,6 +46,10 @@ class ipx {
 		if (!empty($overrides[0])) $overrides = $overrides[0];
 		$keys     = $this->getElementsForMethod($method);
 		$data     = $this->buildParams($keys, $overrides);
+		$time = date('Y:m:d h:i:s');
+		foreach ($data as $k => $v) {
+			$this->r->publish('debug', "$time KEY $k VAL $v");
+		}
 		$response = $this->client->__soapCall($method, array('request' => $data)); 
 		return $response;
 	}

@@ -10,26 +10,24 @@ class main extends controller {
         $this->template('main/simple', array());
 	}
 
-	public function indexPost($request){
-		$phone    = helpers::cleanPhoneNumber($_REQUEST['telefono']);
-		$sms      = new sms();
-		$response = $sms->sendSms($phone, config::read('free', 'messages'));
-        $this->r->save('sms_response', $response);
-        $this->template('main/simple', array());
-	}
+    //////////////////////////////////////
+    //         IDENTIFICATION           //
+    //////////////////////////////////////
 
 	/**
-	 * This is called when the user clicks the link in the sms they
-     * receive.
+	 * This is called when the user clicks the link in the sms 
+     * they receive from us
 	 */
 	public function playwin($request){
 		$ident = new ident();
-        $alias = $ident->getAliasForUser();
-        if ($alias->redirectURL) {
+        $out   = $ident->createSession();
+        if ($out->redirectURL) {
+            $this->setSessionId($out->sessionId);
 
             // After successful redirection the user returns
             // to alias2 to complete identification
-            header('Location: '.$alias->redirectURL);
+            $x = $out->redirectURL . '&PHPSESSID='. session_id();
+            header('Location: '.$x);
             exit();
         }
 	}
@@ -37,157 +35,32 @@ class main extends controller {
     /**
      * This is the second and final part of the 
      * ident process. If successful it will continue
-     * to the subscription flow (tryToChargeUser)
+     * to the subscription flow and try to charge user
      */
     public function alias2(){
         $ident = new ident();
-        $out   = $ident->alias2();
-        if ($out->responseMessage == 'Success') {
-            $this->tryToChargeUser();
-            $this->template('main/thanks');
-            //$this->template('main/oops');
+        $out = $this->identCheckStatus();
+        if ($out->responseMessage !== 'Success') {
+            echo 'ident:check failed';
         }
-    }
 
-    public function tryToChargeUser(){
-        $this->subscribeOrCharge();
-        //$this->oneshot();
-    }
+        $status_code = $out->statusCode;
 
-    /**
-     * If the user has been identified as a current subscriber
-     * we will send then straight to the authorizePayment method
-     * otherwise we will create a subscription
-     */
-	private function subscribeOrCharge($tariff_class = 'EUR300ES') {
-		$consumer_id = $this->getConsumerId();
-        if (in_array($this->getStatus(), array(1, 2))){
-            $this->authorizePayment();
-            $this->capturePayment();
-        } else {
-            try {
-                $out = $this->createSubscriptionSession();
-                $this->setSessionId($out->sessionId);
-                header('Location: ' . $out->redirectURL);
-                exit();
-            } catch (Exception $e) { 
-                echo $e->getMessage();
-                exit();
-            }
+        $out = $this->identFinalizeSession();
+        if ($out->responseMessage !== 'Success') {
+            echo 'ident:finalize failed';
         }
-	}
 
-    public function getStatus(){
-        return $this->r->get('status:'.session_id());
+        $this->setAlias($out->consumerId);
+        $this->subscribeOrCharge($status_code);
+        $this->template('main/thanks');
     }
 
     /**
-     * This is the second computation once the user has
-     * been identified by the IPX service
+     * Used by the identification process to 
+     * check the status of the current user
      */
-	public function chargeuser2($request=array()){
-        try {
-            $this->finalizeSubscriptionSession();
-            $this->authorizePayment();
-            $this->capturePayment();
-        } catch (Exception $e) {
-            echo $e->getMessage();
-            exit();
-        }
-	}
-
-    /**
-     * This is only called if the user has just been identified
-     * and does NOT have a current subscription
-     */
-	private function finalizeSubscriptionSession(){ 
-		$sub = new subscription();
-		$out = $sub->finalizeSubscriptionSession(array(
-			'sessionId' => $this->getSessionId(),
-			'username'  => $this->getSubscriptionUser(),
-			'password'  => $this->getSubscriptionPwd()
-		));
-        if ($out->responseMessage == 'Success') {
-            $this->setConsumerId($out->consumerId);
-            $this->setSubscriptionId($out->subscriptionId);
-            return $out;
-        } else {
-            throw new Exception('Finalize Subscription: ' . $out->responseMessage);
-        }
-	}
-
-	public function authorizePayment(){
-		$sub = new subscription();
-		$out = $sub->authorizePayment(array(
-			'username'       => $this->getSubscriptionUser(),
-			'password'       => $this->getSubscriptionPwd(),
-			'consumerId'     => $this->getConsumerId(),
-			'subscriptionId' => $this->getSubscriptionId(),
-		));
-        print_r($out); die;
-        if ($out->responseMessage == 'Success') {
-            return $out;
-        } else {
-            throw new Exception('AuthorizePayment: ' . $out->responseMessage);
-        }
-	}
-
-    /**
-     * The final method in the whole process.
-     */
-	private function capturePayment(){
-        die('here we capture payment');
-		$sub = new subscription();
-		$out = $sub->capturePayment(array(
-			'username'  => $this->getSubscriptionUser(),
-			'password'  => $this->getSubscriptionPwd(),
-			'sessionId' => $this->getSessionId()
-		));
-        if ($out->responseMessage == 'Success') {
-            return $out;
-        } else {
-            throw new Exception("Capture Payment: " . $out->responseMessage);
-        }
-	}
-
-    /**
-     * This is called if the user cannot be identified and we
-     * cannot create a subscription.
-     */
-    public function oneshot(){
-        $purchase = new purchase();
-        $out = $purchase->createSession();
-        if ($out->responseMessage == 'Success') {
-            header('Location: '. $out->redirectURL);
-            exit();
-        } else {
-            throw new Exception("Could not do oneshot");
-        }
-    }
-
-    /**
-     * This method is called by the IPX service to inform us of 
-     * a terminated subscription.
-     */
-	public function terminateSubscription($request){
-		$sub      = new subscription();
-		$con_id   = helpers::cleanPhoneNumber($_GET['consumerId']);
-		$sub_id   = $_GET['subscriptionId'];
-		$response = $sub->terminateSubscription(array(
-			'consumerId'     => $con_id,
-			'subscriptionId' => $sub_id
-		));
-	}
-
-    private function isSubscriber($id){
-        return $this->r->sismember('subscribers', $id);
-    }
-
-    /**
-     * Used by the identification process to check the status
-     * of the current user
-     */
-	private function checkStatus($user, $pwd){
+	private function identCheckStatus(){
 		$ident = new ident();
 		$out   = $ident->checkStatus(array(
 			'username'  => $this->getSubscriptionUser(),
@@ -197,7 +70,92 @@ class main extends controller {
 		return $out;
 	}
 
-	private function createSubscriptionSession($tariff_class='EUR300ES'){
+	private function identFinalizeSession(){
+		$ident = new ident();
+		$out = $ident->finalizeSession(array(
+			'username'  => $this->getSubscriptionUser(),
+			'password'  => $this->getSubscriptionPwd(),
+			'sessionId' => $this->getSessionId()
+		));
+		return $out;
+	}
+
+    /////////////////////////////////
+    //         SUBSCRIPTION        //
+    /////////////////////////////////
+
+    /**
+     * This is only called if the user has just been identified
+     * and does NOT have a current subscription
+     */
+	private function subscriptionFinalizeSubscriptionSession(){ 
+		$sub = new subscription();
+		$out = $sub->finalizeSubscriptionSession(array(
+			'sessionId' => $this->getSessionId(),
+			'username'  => $this->getSubscriptionUser(),
+			'password'  => $this->getSubscriptionPwd()
+		));
+        if ($out->responseMessage == 'Success') {
+            $alias = $this->r->get('alias:'.session_id());
+            $this->r->set('consumerid:'.$alias, $out->consumerId);
+            $this->setSubscriptionId($out->subscriptionId);
+            $this->setConsumerId($out->consumerId);
+            $this->storeConsumerIdWithAlias();
+            return $out;
+        } else {
+            throw new Exception('Finalize Subscription:'.$out->responseMessage);
+        }
+	}
+
+	public function subscriptionAuthorizePayment(){
+		$sub = new subscription();
+		$out = $sub->authorizePayment(array(
+			'username'       => $this->getSubscriptionUser(),
+			'password'       => $this->getSubscriptionPwd(),
+			'consumerId'     => $this->getConsumerId(),
+			'subscriptionId' => $this->getSubscriptionId(),
+		));
+        if ($out->responseMessage == 'Success') {
+            print_r($out);
+            return $out;
+        } else {
+            throw new Exception('Authorize Payment:'.$out->responseMessage);
+        }
+	}
+
+    /**
+     * The final method in the whole process.
+     */
+	private function subscriptionCapturePayment($session_id){
+        $this->r->publish('debug', 'capture payment using session_id -> '. $this->getSessionId());
+		$sub = new subscription();
+		$out = $sub->capturePayment(array(
+			'username'  => $this->getSubscriptionUser(),
+			'password'  => $this->getSubscriptionPwd(),
+			'sessionId' => $session_id
+		));
+        if ($out->responseMessage == 'Success') {
+            return $out;
+        } else {
+            throw new Exception('Capture Payment: '.$out->responseMessage);
+        }
+	}
+
+    /**
+     * This method is called by the IPX service to inform us of 
+     * a terminated subscription.
+     */
+	public function subscriptionTerminateSubscription($request){
+		$sub      = new subscription();
+		$con_id   = helpers::cleanPhoneNumber($_GET['consumerId']);
+		$sub_id   = $_GET['subscriptionId'];
+		$response = $sub->terminateSubscription(array(
+			'consumerId'     => $con_id,
+			'subscriptionId' => $sub_id
+		));
+	}
+
+	private function subscriptionCreateSubscriptionSession($tariff_class='EUR300ES'){
 		$sub = new subscription();
 		$out = $sub->createSubscriptionSession(array(
 			'tariffClass'       => $this->getSubscriptionTariff(),
@@ -216,18 +174,71 @@ class main extends controller {
         }
 	}
 
-	private function finalizeSession($user, $pwd){
-		$ident = new ident();
-		$out = $ident->finalizeSession(array(
-			'username'  => $this->getSubscriptionUser(),
-			'password'  => $this->getSubscriptionPwd(),
-			'sessionId' => $this->getSessionId()
-		));
-		return $out;
+    /**
+     * If the user has been identified as a current subscriber
+     * we will send then straight to the authorizePayment method
+     * otherwise we will create a subscription
+     */
+	private function subscribeOrCharge($status) {
+        if ($status == 1) {
+            $out = $this->subscriptionAuthorizePayment();
+            $this->subscriptionCapturePayment($out->sessionId);
+        } else {
+            try {
+                $out = $this->subscriptionCreateSubscriptionSession();
+                header('Location: '.$out->redirectURL . '&PHPSESSID='. session_id());
+                exit();
+            } catch (Exception $e) { 
+                echo $e->getMessage();
+                exit();
+            }
+        }
 	}
 
+    public function getSubscriptionStatus(){
+        $status = $this->r->get('subscription:status:'.session_id());
+        $this->r->publish('debug', 'getting status -> ' . $status);
+        return $status;
+    }
+
+    public function setSubscriptionStatus($status){
+        $this->r->publish('debug', 'setting status -> ' . $status);
+        $this->r->set('subscription:status:'.session_id(), $status);
+    }
+
+    /**
+     * This is the second computation once the user has
+     * been identified by the IPX service
+     */
+	public function chargeuser2($request=array()){
+        try {
+            $out = $this->subscriptionFinalizeSubscriptionSession();
+            $out = $this->subscriptionAuthorizePayment();
+            $this->subscriptionCapturePayment($out->sessionId);
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            exit();
+        }
+	}
+
+    /**
+     * This is called if the user cannot be identified and we
+     * cannot create a subscription.
+     */
+    public function oneshot(){
+        $purchase = new purchase();
+        $out = $purchase->createSession();
+        if ($out->responseMessage == 'Success') {
+            header('Location: '. $out->redirectURL);
+            exit();
+        } else {
+            throw new Exception("Could not do oneshot");
+        }
+    }
+
 	private function getConsumerId(){
-		return $this->r->get('consumerid:'.session_id());
+        $alias = $this->getAlias();
+		return $this->r->get('consumerid:'.$alias);
 	}
 
 	private function getFrequencyInterval(){
@@ -241,7 +252,14 @@ class main extends controller {
 	}
 
 	private function getSessionId(){
-		return $this->r->get('session:'.session_id());
+		$sid = $this->r->get('session:'.session_id());
+        $this->r->publish('debug', 'fetching session_id -> ' . $sid);
+        return $sid;
+	}
+
+	private function setSessionId($session_id) {
+        $this->r->publish('debug', 'setting session_id -> ' . $session_id);
+		return $this->r->set('session:'.session_id(), $session_id);
 	}
 
     private function getSubscriptionId(){
@@ -281,8 +299,7 @@ class main extends controller {
         $out = $purchase->checkStatus();
         if ($out->responseMessage != 'Success') {
             $this->template('main/error', array(
-                'error' => 'Unable to complete single purchase'
-            ));
+                'error' => 'Unable to complete single purchase'));
             exit();
         }
     }
@@ -292,18 +309,20 @@ class main extends controller {
         $out = $purchase->finalizeSession();
         if ($out->responseMessage != 'Success') {
             $this->template('main/error', array(
-                'error' => 'Unable to finalize single purchase'
-            ));
+                'error' => 'Unable to finalize single purchase'));
             exit();
         }
     }
 
+    private function setAlias($alias){
+        $this->r->set('alias:'.session_id(), $alias);
+    }
+
+    private function getAlias(){
+        return $this->r->get('alias:'.session_id());
+    }
 	private function setConsumerId($consumer_id){
 		return $this->r->set('consumerid:'.session_id(), $consumer_id);
-	}
-
-	private function setSessionId($session_id) {
-		return $this->r->set('session:'.session_id(), $session_id);
 	}
 
 	private function sendInitialSms($phone) {
@@ -318,8 +337,7 @@ class main extends controller {
 			'response' => $out,
 			'number'   => $phone,
 			'heading'  => $headings[$choice],
-			'message'  => $messages[$choice]
-		));
+			'message'  => $messages[$choice]));
 	}
 
 	private function setSubscriptionId($id){

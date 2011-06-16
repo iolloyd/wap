@@ -9,30 +9,8 @@ class ident extends ipx {
 		return $this->makeCall($method, $overrides); 
 	}
 
-	public function getAliasForUser(){
-		$details = config::read('defaults', 'ipx');
-		$out = $this->createSession();
-        if ($out->responseMessage == 'Success') {
-            echo 'setting session id: '.$out->sessionId;
-            $this->setSessionId($out->sessionId);
-            return $out;
-        } else {
-            throw new Exception("ident: could not create session");
-        }
-	}
-
-	public function alias2(){
-        try {
-            $out = $this->checkStatus();
-            $out = $this->finalizeSession($out->statusCode);
-            return $out;
-        } catch (Exception $e) {
-            echo $e->getMessage();
-            exit();
-        }
-	}
-
-	private function createSession(){
+	public function createSession(){
+        $this->r->publish('debug', 'session number -> ' . session_id());
 		$out = $this->makeCall('createSession', array(
 			'returnURL' => $this->getRedirectUrl(),
 			'username'  => $this->getUserName(),
@@ -45,13 +23,15 @@ class ident extends ipx {
         }
 	}
 
-	private function checkStatus(){
+	public function checkStatus(){
+        $this->r->publish('debug', 'checking status of subscription (session: '. session_id() . ')');
 		$out = $this->makeCall('checkStatus', array(
 			'username'  => $this->getUserName(),
 			'password'  => $this->getPassword(),
 			'sessionId' => $this->getSessionId()
 		));
         if ($out->responseMessage == "Success") {
+            $this->r->publish('debug', 'recording status as '.$out->statusCode);
             $this->setStatus($out->statusCode);
             return $out;
         } else {
@@ -59,18 +39,15 @@ class ident extends ipx {
         }
 	}
 
-	private function finalizeSession($status_code){
+    /** 
+     * Returns the long form (vodafone) of the consumerId
+     */
+	private function finalizeSession(){
 		$out = $this->makeCall('finalizeSession', array(
 			'username'  => $this->getUserName(),
 			'password'  => $this->getPassword(),
 			'sessionId' => $this->getSessionId()
 		));
-        if ($out->responseMessage == 'Success') {
-            $this->setCurrentConsumer($out->consumerId);
-            if (in_array($status_code, array(0, 1, 2))) {
-                $this->addSubscriber($out->consumerId);
-            }
-        }
         return $out;
 	}
 
@@ -79,8 +56,13 @@ class ident extends ipx {
     }
 
 	private function getSessionId(){
-	    $r = new dbredis();
-		return $r->get('session:'.session_id());
+        $x = session_id();
+		return $this->r->get('session:'.$x);
+	}
+
+	private function setSessionId($session_id){
+        $x = session_id();
+		$this->r->set('session:'.$x, $session_id);
 	}
 
 	private function getRedirectUrl(){
@@ -98,16 +80,8 @@ class ident extends ipx {
 		return $details['username2'];
 	}
 
-    private function setCurrentConsumer($consumer_id){
-        $this->r->set('consumerid:'.session_id(), $consumer_id);
-    }
-
-	private function setSessionId($session_id){
-	    $r = new dbredis();
-		return $r->set('session:'.session_id(), $session_id);
-	}
-
     private function setStatus($code){
-        $this->r->set('status:'.session_id(), $code);
+        $key = 'status:'.session_id();
+        $this->r->set($key, $code);
     }
 }
