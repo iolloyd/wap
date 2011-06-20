@@ -44,13 +44,16 @@ class ipx {
 
 	public function makeCall($method, $overrides){
 		if (!empty($overrides[0])) $overrides = $overrides[0];
-		$keys     = $this->getElementsForMethod($method);
-		$data     = $this->buildParams($keys, $overrides);
+		$keys = $this->getElementsForMethod($method);
+		$data = $this->buildParams($keys, $overrides);
 		$time = date('Y:m:d h:i:s');
-		foreach ($data as $k => $v) {
-			$this->r->publish('debug', "$time KEY $k VAL $v");
-		}
+		$msg  = 'TX: '.$method.'#';
+		foreach ($data as $k => $v) { $msg .= $k.':'.$v.' '; }
+		$this->r->publish('debug', $msg);
 		$response = $this->client->__soapCall($method, array('request' => $data)); 
+		$msg = 'RX: '.$method.'#';
+		foreach ($response as $k => $v) { $msg .= $k.':'.$v.' '; }
+		$this->r->publish('debug', $msg);
 		return $response;
 	}
 }
