@@ -61,10 +61,8 @@ targetNamespace="http://www.ipx.com/api/services/subscriptionapi31">
           <xsd:sequence>
             <xsd:element name="correlationId" type="xsd:string" />
             <xsd:element name="subscriptionId" type="xsd:string" />
-            <xsd:element name="subscriptionStatus"
-            type="xsd:int" />
-            <xsd:element name="subscriptionStatusMessage"
-            type="xsd:string" />
+            <xsd:element name="subscriptionStatus" type="xsd:int" />
+            <xsd:element name="subscriptionStatusMessage" type="xsd:string" />
             <xsd:element name="consumerId" type="xsd:string" />
             <xsd:element name="operator" type="xsd:string" />
             <xsd:element name="operatorNetworkCode" type="xsd:int" />
