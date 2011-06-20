@@ -16,7 +16,6 @@ class report extends controller {
 		$phone = $_GET['DestinationAddress'];
 		$msgid = $_GET['MessageId'];	
 		exec("php ".dirname(__FILE__)."/do_activate.php $phone $msgid > /dev/null &", $a, $b);
-		//}
 		*/
 		$this->template('activate/index');
 	}
