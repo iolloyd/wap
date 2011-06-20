@@ -10,7 +10,6 @@ class ident extends ipx {
 	}
 
 	public function createSession(){
-        $this->r->publish('debug', 'session number -> ' . session_id());
 		$out = $this->makeCall('createSession', array(
 			'returnURL' => $this->getRedirectUrl(),
 			'username'  => $this->getUserName(),
@@ -24,14 +23,12 @@ class ident extends ipx {
 	}
 
 	public function checkStatus(){
-        $this->r->publish('debug', 'checking status of subscription (session: '. session_id() . ')');
 		$out = $this->makeCall('checkStatus', array(
 			'username'  => $this->getUserName(),
 			'password'  => $this->getPassword(),
 			'sessionId' => $this->getSessionId()
 		));
         if ($out->responseMessage == "Success") {
-            $this->r->publish('debug', 'recording status as '.$out->statusCode);
             $this->setStatus($out->statusCode);
             return $out;
         } else {
