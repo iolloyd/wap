@@ -10,9 +10,9 @@ class main extends controller {
         $this->template('main/simple', array());
 	}
 
-    //////////////////////////////////////
-    //         IDENTIFICATION           //
-    //////////////////////////////////////
+    ////////////////////////////////////
+    //         IDENTIFICATION         //
+    ////////////////////////////////////
 
 	/**
 	 * This is called when the user clicks the link in the sms 
@@ -22,10 +22,14 @@ class main extends controller {
 		$ident = new ident();
         $out   = $ident->createSession();
         if ($out->redirectURL) {
+
+            // This will be sed later by 
+            // ident:checkstatus and ident:finalizesession
+            // after the redirect
             $this->setSessionId($out->sessionId);
 
             // After successful redirection the user returns
-            // to alias2 to complete identification
+            // to "alias2" to complete identification
             $x = $out->redirectURL . '&PHPSESSID='. session_id();
             header('Location: '.$x);
             exit();
@@ -39,21 +43,20 @@ class main extends controller {
      */
     public function alias2(){
         $ident = new ident();
-        $out = $this->identCheckStatus();
+        $out   = $this->identCheckStatus();
         if ($out->responseMessage !== 'Success') {
             echo 'ident:check failed';
         }
 
         $status_code = $out->statusCode;
-
-        $out = $this->identFinalizeSession();
+        $out         = $this->identFinalizeSession();
         if ($out->responseMessage !== 'Success') {
             echo 'ident:finalize failed';
+            exit();
         }
 
         $this->setAlias($out->consumerId);
         $this->subscribeOrCharge($status_code);
-        $this->template('main/thanks');
     }
 
     /**
@@ -62,22 +65,20 @@ class main extends controller {
      */
 	private function identCheckStatus(){
 		$ident = new ident();
-		$out   = $ident->checkStatus(array(
+		return $ident->checkStatus(array(
 			'username'  => $this->getSubscriptionUser(),
 			'password'  => $this->getSubscriptionPwd(),
 			'sessionId' => $this->getSessionId()
 		));
-		return $out;
 	}
 
 	private function identFinalizeSession(){
 		$ident = new ident();
-		$out = $ident->finalizeSession(array(
+		return $ident->finalizeSession(array(
 			'username'  => $this->getSubscriptionUser(),
 			'password'  => $this->getSubscriptionPwd(),
 			'sessionId' => $this->getSessionId()
 		));
-		return $out;
 	}
 
     /////////////////////////////////
@@ -96,27 +97,26 @@ class main extends controller {
 			'password'  => $this->getSubscriptionPwd()
 		));
         if ($out->responseMessage == 'Success') {
-            $alias = $this->r->get('alias:'.session_id());
-            $this->r->set('consumerid:'.$alias, $out->consumerId);
             $this->setSubscriptionId($out->subscriptionId);
             $this->setConsumerId($out->consumerId);
-            $this->storeConsumerIdWithAlias();
             return $out;
         } else {
             throw new Exception('Finalize Subscription:'.$out->responseMessage);
         }
 	}
 
-	public function subscriptionAuthorizePayment(){
+	public function subscriptionAuthorizePayment($subscription_id=false){
+        if ($subscription_id == false) {
+            $subscription_id = $this->getSubscriptionId();
+        }
 		$sub = new subscription();
 		$out = $sub->authorizePayment(array(
 			'username'       => $this->getSubscriptionUser(),
 			'password'       => $this->getSubscriptionPwd(),
 			'consumerId'     => $this->getConsumerId(),
-			'subscriptionId' => $this->getSubscriptionId(),
+			'subscriptionId' => $subscription_id
 		));
         if ($out->responseMessage == 'Success') {
-            print_r($out);
             return $out;
         } else {
             throw new Exception('Authorize Payment:'.$out->responseMessage);
@@ -127,7 +127,6 @@ class main extends controller {
      * The final method in the whole process.
      */
 	private function subscriptionCapturePayment($session_id){
-        $this->r->publish('debug', 'capture payment using session_id -> '. $this->getSessionId());
 		$sub = new subscription();
 		$out = $sub->capturePayment(array(
 			'username'  => $this->getSubscriptionUser(),
@@ -158,13 +157,12 @@ class main extends controller {
 	private function subscriptionCreateSubscriptionSession($tariff_class='EUR300ES'){
 		$sub = new subscription();
 		$out = $sub->createSubscriptionSession(array(
+			'username'          => $this->getSubscriptionUser(),
+			'password'          => $this->getSubscriptionPwd(),
 			'tariffClass'       => $this->getSubscriptionTariff(),
 			'returnURL'         => $this->getSubscriptionSessionUrl(),
 			'serviceName'       => $this->getServiceName(),
-			'frequencyInterval' => $this->getFrequencyInterval(),
-			'username'          => $this->getSubscriptionUser(),
-			'password'          => $this->getSubscriptionPwd(),
-			'sessionId'         => $this->getSessionId(),
+			'frequencyInterval' => $this->getFrequencyInterval()
 		));
         if ($out->responseMessage == 'Success') {
             $this->setSessionId($out->sessionId);
@@ -181,11 +179,14 @@ class main extends controller {
      */
 	private function subscribeOrCharge($status) {
         if ($status == 1) {
+            // Already subscribed -> go to authorize and capture
             $out = $this->subscriptionAuthorizePayment();
             $this->subscriptionCapturePayment($out->sessionId);
         } else {
             try {
                 $out = $this->subscriptionCreateSubscriptionSession();
+
+                // After this redirect, we will return to "chargeuser2"
                 header('Location: '.$out->redirectURL . '&PHPSESSID='. session_id());
                 exit();
             } catch (Exception $e) { 
@@ -197,13 +198,7 @@ class main extends controller {
 
     public function getSubscriptionStatus(){
         $status = $this->r->get('subscription:status:'.session_id());
-        $this->r->publish('debug', 'getting status -> ' . $status);
         return $status;
-    }
-
-    public function setSubscriptionStatus($status){
-        $this->r->publish('debug', 'setting status -> ' . $status);
-        $this->r->set('subscription:status:'.session_id(), $status);
     }
 
     /**
@@ -213,7 +208,7 @@ class main extends controller {
 	public function chargeuser2($request=array()){
         try {
             $out = $this->subscriptionFinalizeSubscriptionSession();
-            $out = $this->subscriptionAuthorizePayment();
+            $out = $this->subscriptionAuthorizePayment($out->subscriptionId);
             $this->subscriptionCapturePayment($out->sessionId);
         } catch (Exception $e) {
             echo $e->getMessage();
@@ -236,9 +231,14 @@ class main extends controller {
         }
     }
 
-	private function getConsumerId(){
+	public function getConsumerId(){
         $alias = $this->getAlias();
 		return $this->r->get('consumerid:'.$alias);
+	}
+
+	private function setConsumerId($consumer_id){
+        $alias = $this->getAlias();
+		return $this->r->set('consumerid:'.$alias, $consumer_id);
 	}
 
 	private function getFrequencyInterval(){
@@ -253,19 +253,24 @@ class main extends controller {
 
 	private function getSessionId(){
 		$sid = $this->r->get('session:'.session_id());
-        $this->r->publish('debug', 'fetching session_id -> ' . $sid);
         return $sid;
 	}
 
 	private function setSessionId($session_id) {
-        $this->r->publish('debug', 'setting session_id -> ' . $session_id);
 		return $this->r->set('session:'.session_id(), $session_id);
 	}
 
     private function getSubscriptionId(){
-        $id = $this->r->get('subscription:'.session_id());
+        $alias = $this->getAlias();
+        $id    = $this->r->get('subscription:'.$alias);
         return $id;
     }
+
+	private function setSubscriptionId($id){
+        $alias = $this->getAlias();
+        $this->r->publish('debug', 'setting subscriptionId:'.$alias.' to '.$id);
+		return $this->r->set('subscription:'.$alias, $id);
+	}
 
 	private function getSubscriptionPwd(){
 		$details = config::read('defaults', 'ipx');
@@ -286,6 +291,10 @@ class main extends controller {
 		$details = config::read('defaults', 'ipx');
 		return $details['subscription_tariff'];
 	}
+
+    ///////////////////////////////
+    //         PURCHASE          //
+    ///////////////////////////////
 
     public function oneshot2($request){
         $purchase = new purchase();
@@ -314,6 +323,8 @@ class main extends controller {
         }
     }
 
+    ///////////////////////////////
+
     private function setAlias($alias){
         $this->r->set('alias:'.session_id(), $alias);
     }
@@ -321,9 +332,6 @@ class main extends controller {
     private function getAlias(){
         return $this->r->get('alias:'.session_id());
     }
-	private function setConsumerId($consumer_id){
-		return $this->r->set('consumerid:'.session_id(), $consumer_id);
-	}
 
 	private function sendInitialSms($phone) {
 		$msg    = config::read('free', 'messages');
@@ -340,7 +348,4 @@ class main extends controller {
 			'message'  => $messages[$choice]));
 	}
 
-	private function setSubscriptionId($id){
-		return $this->r->set('subscription:'.session_id(), $id);
-	}
 }
