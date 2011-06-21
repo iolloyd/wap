@@ -46,14 +46,18 @@ class ipx {
 		if (!empty($overrides[0])) $overrides = $overrides[0];
 		$keys = $this->getElementsForMethod($method);
 		$data = $this->buildParams($keys, $overrides);
+		/*
 		$time = date('Y:m:d h:i:s');
 		$msg  = 'TX: '.$method.'#';
 		foreach ($data as $k => $v) { $msg .= $k.':'.$v.' '; }
 		$this->r->publish('debug', $msg);
+		*/
 		$response = $this->client->__soapCall($method, array('request' => $data)); 
+		/*
 		$msg = 'RX: '.$method.'#';
 		foreach ($response as $k => $v) { $msg .= $k.':'.$v.' '; }
 		$this->r->publish('debug', $msg);
+		*/
 		return $response;
 	}
 }

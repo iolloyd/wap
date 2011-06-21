@@ -1,0 +1,176 @@
+*{
+	margin:0px;
+	padding:0px;
+}
+body {
+	background-image: url(imagenes/motivo.jpg);
+	background-repeat: repeat-x;
+	background-color: #000;
+}
+#contenedor {
+	height: 616px;
+	width: 950px;
+	margin-right: auto;
+	margin-left: auto;
+	position: relative;	
+}
+#contenedor #textoLegal p {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	color: #6f6a55;
+	text-align: justify;
+}
+#contenedor #textoLegal p a {
+	color: #FF6719;
+	text-decoration: underline;
+}
+#contenedor #textoLegal p a:hover {
+	font-weight: bold;
+}
+
+#contenedor #contenido {
+	min-height:616px;
+
+}
+#contenedor #contenido #titulos {
+	position:absolute;
+	top:282px;
+	left:572px;
+	text-align: right;
+	color: #FFF;
+	font-family: Calibri, Arial;
+	font-weight: bold;
+	width: 340px;
+}
+#contenedor #contenido #contenidoLogin {
+	position:absolute;
+	top:282px;
+	left:559px;
+	text-align: right;
+	color: #54361E;
+	font-family: Calibri, Arial;
+	font-weight: bold;
+	width: 340px;
+	font-size: 16px;
+}
+
+#contenedor #contenido #contenidoEntrada {
+	position:absolute;
+	top:338px;
+	left:559px;
+	text-align: right;
+	color: #54361E;
+	font-family: Calibri, Arial;
+	font-weight: bold;
+	width: 340px;
+	font-size: 16px;
+}
+
+
+
+#contenedor #contenido #titulos .tituloInicio {
+	font-size: 28px;
+	display: block;
+	
+	
+}
+#contenedor #contenido #titulos .tituloInicioPeq {
+	font-size: 20px;
+	margin-top: -4px;
+	display: block;
+}
+#contenedor #contenido #campoTextoInicio input {
+	background-color: #eaddce;
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+	font-family: Calibri, Arial;
+	font-size: 24px;
+	color: #513319;
+	font-weight: bold;
+	text-align: right;
+	width:190px;
+	position:absolute;
+	top:360px;
+	left:715px;
+}
+#contenedor #contenido #f1 #btnInicio {
+	position:absolute;
+	top:415px;
+	left:574px;
+	width: 318px;
+}
+#contenedor #contenido #f1 #btnInicio a {
+	display: block;
+	font-size: 20px;
+	font-weight: bold;
+	color: #FFF;
+	font-family: Calibri, Arial;
+	text-decoration:underline;
+	float: right;
+	margin-top: 6px;
+}
+
+#contenedor #contenido #f1 #btnInicio a:hover {
+
+	color:#000;
+
+}
+
+#contenedor #contenido #f1 #btnInicio input[type="submit"] {cursor:pointer; background: url(/imagenes/button-submit.png) no-repeat scroll left center transparent; border: 0pt none; width: 272px; height: 66px; position: absolute; z-index: 3; top: -15px; right: -35px; text-indent: -5000em;}
+
+#contenedor #contenido #enlaceUsuariosregistrados {
+	position: absolute;
+	left: 683px;
+	top: 523px;
+	display: block;
+	width: 216px;
+	text-align: right;
+}
+
+#contenedor #contenido #enlaceUsuariosregistrados a {
+	color: #FF6719;
+	text-decoration: underline;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+#contenedor #contenido #enlaceUsuariosregistrados a:hover {
+	color: #FFF;
+}
+#contenedor #contenido #f1 #contenidoLogin input {
+	background-color: #ff6718;
+	border: 1px dashed #C9B185;
+	color: #F4EADF;
+	padding-left: 4px;
+	width: 160px;
+	height: 24px;
+	font-weight: bold;
+}
+#contenedor #contenido #f1 #contenidoLogin .textoNormalBlanco {
+	font-size: 14px;
+	font-weight: bold;
+	color: #513319;
+	text-decoration: none;
+}
+
+#contenedor #contenido #f1 #contenidoEntrada input {
+	background-color: #ff6718;
+	border: 1px dashed #C9B185;
+	color: #F4EADF;
+	padding-left: 4px;
+	width: 160px;
+	height: 24px;
+	font-weight: bold;
+}
+#contenedor #contenido #f1 #contenidoEntrada .textoNormalBlanco {
+	font-size: 14px;
+	font-weight: bold;
+	color: #513319;
+	text-decoration: none;
+}
+
+
+#contenedor #contenido #f1 #btnInicio img {
+	float: right;
+}

@@ -37,5 +37,8 @@ class form {
 		}
 		return '<tr>'.$tds.'</tr>';
 	}
+	public static function isValid(){
+		return true;
+	}
 }
 

@@ -48,15 +48,14 @@ class main extends controller {
             echo 'ident:check failed';
         }
 
-        $status_code = $out->statusCode;
-        $out         = $this->identFinalizeSession();
+        $out = $this->identFinalizeSession();
         if ($out->responseMessage !== 'Success') {
             echo 'ident:finalize failed';
             exit();
         }
 
         $this->setAlias($out->consumerId);
-        $this->subscribeOrCharge($status_code);
+        $this->subscribeOrCharge();
     }
 
     /**
@@ -86,6 +85,22 @@ class main extends controller {
     /////////////////////////////////
 
     /**
+     * This is used to check the subscription we want to use
+     */
+    private function subscriptionGetSubscriptionStatus(){
+       if (!$subscription = $this->getSubscriptionId()) {
+           return false;
+       }
+       $sub = new subscription();
+       return $sub->getSubscriptionStatus(array(
+           'subscriptionId' => $subscription,
+           'consumerId'     => $this->getConsumerId(),
+           'username'       => $this->getSubscriptionUser(),
+		   'password'       => $this->getSubscriptionPwd()
+       ));
+    }
+
+    /**
      * This is only called if the user has just been identified
      * and does NOT have a current subscription
      */
@@ -96,25 +111,20 @@ class main extends controller {
 			'username'  => $this->getSubscriptionUser(),
 			'password'  => $this->getSubscriptionPwd()
 		));
-        if ($out->responseMessage == 'Success') {
-            $this->setSubscriptionId($out->subscriptionId);
-            $this->setConsumerId($out->consumerId);
-            return $out;
-        } else {
+        $this->r->publish('debug', $out->responseMessage);
+        if ($out->responseMessage !== 'Success') {
             throw new Exception('Finalize Subscription:'.$out->responseMessage);
         }
+        return $out;
 	}
 
 	public function subscriptionAuthorizePayment($subscription_id=false){
-        if ($subscription_id == false) {
-            $subscription_id = $this->getSubscriptionId();
-        }
 		$sub = new subscription();
 		$out = $sub->authorizePayment(array(
 			'username'       => $this->getSubscriptionUser(),
 			'password'       => $this->getSubscriptionPwd(),
 			'consumerId'     => $this->getConsumerId(),
-			'subscriptionId' => $subscription_id
+			'subscriptionId' => $this->getSubscriptionId()
 		));
         if ($out->responseMessage == 'Success') {
             return $out;
@@ -127,6 +137,7 @@ class main extends controller {
      * The final method in the whole process.
      */
 	private function subscriptionCapturePayment($session_id){
+        die('capturing payment');
 		$sub = new subscription();
 		$out = $sub->capturePayment(array(
 			'username'  => $this->getSubscriptionUser(),
@@ -134,6 +145,7 @@ class main extends controller {
 			'sessionId' => $session_id
 		));
         if ($out->responseMessage == 'Success') {
+            $this->storeChargeDetails();
             return $out;
         } else {
             throw new Exception('Capture Payment: '.$out->responseMessage);
@@ -177,9 +189,9 @@ class main extends controller {
      * we will send then straight to the authorizePayment method
      * otherwise we will create a subscription
      */
-	private function subscribeOrCharge($status) {
-        if ($status == 1) {
-            // Already subscribed -> go to authorize and capture
+	private function subscribeOrCharge() {
+        $out = $this->subscriptionGetSubscriptionStatus();
+        if ($out && $out->subscriptionStatus == 1) {
             $out = $this->subscriptionAuthorizePayment();
             $this->subscriptionCapturePayment($out->sessionId);
         } else {
@@ -208,6 +220,8 @@ class main extends controller {
 	public function chargeuser2($request=array()){
         try {
             $out = $this->subscriptionFinalizeSubscriptionSession();
+            $this->setSubscriptionId($out->subscriptionId);
+            $this->setConsumerId($out->consumerId);
             $out = $this->subscriptionAuthorizePayment($out->subscriptionId);
             $this->subscriptionCapturePayment($out->sessionId);
         } catch (Exception $e) {
@@ -233,11 +247,14 @@ class main extends controller {
 
 	public function getConsumerId(){
         $alias = $this->getAlias();
-		return $this->r->get('consumerid:'.$alias);
+		$consumer_id = $this->r->get('consumerid:'.$alias);
+        $this->r->publish('debug', 'consumerid:'.$alias.' '.$consumer_id);
+        return $consumer_id;
 	}
 
 	private function setConsumerId($consumer_id){
         $alias = $this->getAlias();
+        $this->r->publish('debug', 'setting consumerid:'.$alias.' to '.$consumer_id);
 		return $this->r->set('consumerid:'.$alias, $consumer_id);
 	}
 
@@ -263,6 +280,7 @@ class main extends controller {
     private function getSubscriptionId(){
         $alias = $this->getAlias();
         $id    = $this->r->get('subscription:'.$alias);
+        $this->r->publish('debug', 'getting subscriptionId:'.$alias.' -> '.$id);
         return $id;
     }
 
@@ -326,6 +344,7 @@ class main extends controller {
     ///////////////////////////////
 
     private function setAlias($alias){
+        $this->r->publish('debug', 'SET alias:'.session_id(). '-> '.$alias);
         $this->r->set('alias:'.session_id(), $alias);
     }
 
@@ -333,19 +352,8 @@ class main extends controller {
         return $this->r->get('alias:'.session_id());
     }
 
-	private function sendInitialSms($phone) {
-		$msg    = config::read('free', 'messages');
-		$sms    = new sms();
-		$out    = $sms->sendSms($phone, $msg, 'EUR0ES');
-		$choice = $out->responseMessage == 'Success';
-		$this->r->recordEvent('send_sms', $phone, $out);
-		$headings = array('Rejected', 'Accepted');
-		$messages = array('no'      , ''        );
-		$this->template('main/activated', array(
-			'response' => $out,
-			'number'   => $phone,
-			'heading'  => $headings[$choice],
-			'message'  => $messages[$choice]));
-	}
+    private function storeChargeDetails(){
+        $this->r->zincrby('signup', $time, 1, $time);    
+    }
 
 }

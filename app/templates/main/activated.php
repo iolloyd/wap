@@ -1,4 +1,3 @@
-<?  print_r($response); ?>
 <div id="activated">
     <h1><?=$heading?></h1>
 	<div>

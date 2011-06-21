@@ -1,15 +1,15 @@
 all:
     questions:
         - question: Cuál de estos países no tiene frontera con España
-          options: {"Francia", "Andorra", "Portugal"}
-          answer: "Portugal" 
+          options: {"Francia", "Andorra", "Italia", "Portugal"}
+          answer: "Italia" 
 
         - question: Cuál es la segunda ciudad con más habitantes
           options: {"Barcelona", "Bilbao", "Zaragoza", "Valencia"}
           answer: "Zaragoza"
 
         - question: Cuál es el río con mayor recorrido dentro de España
-          options: {"Tajo","Ebro", "Duero", "Guadalquivir"}
+          options: {"Tajo", "Ebro", "Duero", "Guadalquivir"}
           answer: "Ebro"
 
         - question: En qué año se inventó la máquina de coser

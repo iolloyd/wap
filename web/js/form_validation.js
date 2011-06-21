@@ -7,23 +7,36 @@
 	}
 
     function init() {
+        var patterns = {
+            "email" : "^[a-zA-Z0-9_\\.\\-]+\\@(([a-zA-Z0-9\\-])+\\.)+([a-zA-Z0-9]{2,4})+$",
+            "digits": "^\\d+$",
+            "word"  : "\\w+$", 
+        };
+
 		// Loop for each form
         for(var i = 0; i < document.forms.length; i++){
             var needsValidation = false;
             var f = document.forms[i];
 
-			// Loop for each form property
+			// Loop for each member of form being checked
             for(j = 0; j < f.elements.length; j++) {
                 var e = f.elements[j];
                 if (e.type != "text") {
 					continue;
 				}
-                var pattern = e.getAttribute("pattern");
+                var pattern  = e.getAttribute("pattern");
                 var required = e.getAttribute("required") != null;
+
                 if (required && !pattern){
                     pattern = "\\S";
                     e.setAttribute("pattern", pattern);
                 }
+
+                if (pattern == 'digits' || pattern == 'email' || pattern == 'word') {
+                    pattern = patterns[pattern];
+                    e.setAttribute('pattern', pattern);
+                }
+
                 if (pattern){
                     e.onchange = validateOnChange;
                     needsValidation = true;
@@ -36,21 +49,19 @@
 	// This is a callback for anything that has a pattern for
 	// its validation.
 	function validateOnChange(){
-        var textfield = this;
-        var pattern   = textfield.getAttribute("pattern");
-        var value     = this.value;
-        if (value.search(pattern) == -1) textfield.className = "invalid";
-        else textfield.className = "valid";
+        var textfield       = this;
+        var value           = this.value;
+        textfield.className = (value.search(pattern) == -1) ? "invalid" : "valid";
     }
 
 	// This is called when whe submit the form if something needs validating
 	// in the form.
     function validateOnSubmit( ){
-        var invalid = false;  // Start by assuming everything is valid
+        var invalid = false
         for(var i = 0; i < this.elements.length; i++){
             var e = this.elements[i];
             if (e.type == "text" && e.onchange == validateOnChange){
-                e.onchange( ); // Invoke the handler to re-validate
+                e.onchange(); 
                 if (e.className == "invalid") invalid = true;
             }
         }
