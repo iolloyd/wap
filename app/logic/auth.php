@@ -18,4 +18,24 @@ class auth extends controller {
 			$this->template('auth/login');
 		}
 	}
+
+    public function storeUserAndPwd($user, $pwd){
+        $salt = $this->getSalt();
+        $pwd  = sha1($salt.$pwd);
+        $this->r->hset($user, 'pwd', $pwd);
+    }
+
+    public function checkPwd($user){
+        $salt = $this->getSalt();
+        $pwd = $this->r->hget($user);
+        return $pwd == sha1($salt.$pwd);
+    }
+
+    public function getAuthorizedUsers(){
+        $users = $this->r->hgetk
+    }
+
+    private function getSalt(){
+        return 'mnilmailfatiwIalfTgSe';
+    }
 }
