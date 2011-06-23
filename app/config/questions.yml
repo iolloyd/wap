@@ -5,22 +5,22 @@ all:
           answer: "Italia" 
 
         - question: Cuál es la segunda ciudad con más habitantes
-          options: {"Barcelona", "Bilbao", "Zaragoza", "Valencia"}
-          answer: "Zaragoza"
+          options: {"Barcelona", "Bilbao", "Zaragoza", "Madrid"}
+          answer: "Barcelona"
 
         - question: Cuál es el río con mayor recorrido dentro de España
-          options: {"Tajo", "Ebro", "Duero", "Guadalquivir"}
-          answer: "Ebro"
+          options: {"Ebro", "Tajo", "Duero", "Guadalquivir"}
+          answer: "Tajo"
 
         - question: En qué año se inventó la máquina de coser
-          options: {"1851", "1855", "1860"}
-          answer: "1851"
+          options: {"1830", "1851", "1855", "1860"}
+          answer: "1830"
 
         - question: En qué siglo aparecieron las primeras lavadoras?
-          options: {"XVI", "XV", "XIX"}
-          answer: "XV"
+          options: {"XVI", "XV", "XVIII", "XIX"}
+          answer: "XVIII"
 
         - question: De qué año data el primer teléfono de Edison?
-          options: {"1878", "1879", "1890"}
-          answer: "1879"
+          options: {"1878", "1876", "1879", "1890"}
+          answer: "1876"
 

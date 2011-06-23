@@ -1,6 +1,8 @@
 all:
     routes:
         admin: { controller: admin, method: index }
+        play:  { controller: game,  method: play }
+        signout: {controller: auth, method: signout }
     ab:
 dev:
     routes:

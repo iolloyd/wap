@@ -10,10 +10,8 @@ class RedisException extends Exception(){
 }
 
 class lloydredis {
-
 	public $host;
 	public $port;
-
 	private $socket;
 	private $number_of_gets;
 

@@ -1,5 +1,3 @@
 all:
     plugins:
-        rstats:
-            class: rlog
-            method: registerHit
+        rstats: {class: rlog,  method: registerHit}
