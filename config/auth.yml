@@ -5,8 +5,10 @@ all:
         jason: london
     secure_methods:
         admin: 
+        game:
 dev:
     authorized_users:
         user: pass 
     secure_methods:
         admin: 
+        game:

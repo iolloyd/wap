@@ -115,11 +115,7 @@ class lloydredis {
 		for ($i = 0; $i < $count; $i++) {
 			$bulk_head = trim(fgets($this->socket, 512));
 			$size      = substr($bulk_head, 1);
-			if ($size == '-1') {
-				$response[] = null;
-			} else {
-				$response[] = $this->getMultiResponse();
-			}
+			$response[] = ($size == '-1') ? null : $this->getMultiResponse();
 		}
 		return array('star', $response);
 	}

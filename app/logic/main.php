@@ -137,8 +137,10 @@ class main extends controller {
      * The final method in the whole process.
      */
 	private function subscriptionCapturePayment($session_id){
-        die('capturing payment');
+        $this->storeChargeDetails();
+        die('capture payment here');
 		$sub = new subscription();
+        // FOR TESTING ONLY. REMOVE WHEN LIVE
 		$out = $sub->capturePayment(array(
 			'username'  => $this->getSubscriptionUser(),
 			'password'  => $this->getSubscriptionPwd(),
@@ -146,8 +148,10 @@ class main extends controller {
 		));
         if ($out->responseMessage == 'Success') {
             $this->storeChargeDetails();
+            $this->sendWelcomeEmail();
             return $out;
         } else {
+            $this->storeFailedCharge();
             throw new Exception('Capture Payment: '.$out->responseMessage);
         }
 	}
@@ -352,8 +356,31 @@ class main extends controller {
         return $this->r->get('alias:'.session_id());
     }
 
-    private function storeChargeDetails(){
-        $this->r->zincrby('signup', $time, 1, $time);    
+    private function sendWelcomeEmail(){
+        $phone = $this->getConsumerId();
+        $text  = config::read('welcome', 'messages');
+        $sms = new sms();
+        $sms->sendSms($phone, $text, $tariff='EUR0');
+        $this->r->sadd('subscriber', $phone);
     }
 
+    private function storeChargeDetails(){
+        $hour = date("Ymdh");
+        $day  = date("ymd");
+        $month = date("ym");
+        $this->r->zincrby('signup', $hour, 1, $time);    
+        $this->r->zincrby('signup', $day, 1, $time);    
+        $this->r->zincrby('signup', $month, 1, $time);    
+        $this->r->publish('signup', $this->getConsumerId);
+    }
+
+    private function storeFailedCharge(){
+        $hour = date("Ymdh");
+        $day  = date("ymd");
+        $month = date("ym");
+        $this->r->zincrby('signko', $hour, 1, $time);    
+        $this->r->zincrby('signko', $day, 1, $time);    
+        $this->r->zincrby('signko', $month, 1, $time);    
+        $this->r->publish('signko', $this->getConsumerId);
+    }
 }

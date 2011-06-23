@@ -80,7 +80,7 @@ function showTemplate($c, $m, $vars) {
 }
 
 function isLoggedIn(){
-	return $_SESSION['is_authorized'] == true;
+	return @$_SESSION['is_authorized'] == true;
 }
 
 function logout(){
