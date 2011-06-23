@@ -1,7 +1,12 @@
 <?php
 define('NL', sprintf('%s%s', chr(13), chr(10)));
 
-class RedisException extends \Exception {
+class RedisException extends Exception(){
+	public function __construct($msg, $code=0, Exception $prev=null){
+		$msg = __CLASS__ . ':' . $msg;
+        parent::__construct($msg, $code, $prev);
+	}
+
 }
 
 class lloydredis {
@@ -20,7 +25,7 @@ class lloydredis {
 		$this->port   = $port ?: $conn['port'];
 		$this->socket = fsockopen($this->host, $this->port, $errno, $errstr);
 		if (!$this->socket) {
-			throw new \Exception("{$errno} - {$errstr}");
+			throw new RedisException("{$errno} - {$errstr}");
 		}
 	}
 
@@ -43,79 +48,91 @@ class lloydredis {
 	 */
 
 	function __call($name, $args) {
+		$cmd = $this->prepareCmdString($name, $args);
+		$this->sendCmd($cmd);
+		$reply = trim(fgets($this->socket, 512));
+		switch (substr($reply, 0, 1)) {
+			case '-': list($type, $response) = $this->responseMinus($reply)  ; break; 
+			case '+': list($type, $response) = $this->responsePlus($reply)   ; break; 
+			case ':': list($type, $response) = $this->responseInt($reply)    ; break; 
+			case '$': list($type, $response) = $this->responseMulti($reply) ; break; 
+			case '*': list($type, $response) = $this->responseMultiMany($reply)   ; break; 
+			default:
+				throw new RedisException('No entiendo la respuesta del servidor de redis: ' . $reply);
+				break;
+		}
+		$response = $this->prepareResponse($response);
+		return $response;
+	}
+
+    private function prepareCmdString($name, $args) {
 		if(count($args) && is_array($args[count($args)-1])) {
 			$args = $this->expandArgs($args);
 		}
 		array_unshift($args, strtoupper($name));
-		$number_of_gets = 
 		$cmd  = sprintf('*%d%s%s%s', count($args), NL, $this->withLengths($args), NL);
 		$done = 0;
-		for ($w = 0; $w < strlen($cmd); $w += $done) {
+    }
+
+	private function sendCmd($cmd){
+		for ($w = 0, $cmdlen = strlen($cmd); $w < $cmdlen; $w += $done) {
 			$done = fwrite($this->socket, substr($cmd, $w));
 			if ($done === FALSE) {
-				throw new \Exception('Failed to write entire command to stream');
+				throw new RedisException('Failed to write entire command to stream');
 			}
 		}
 
-		/**
-		 * Parse the response based on the reply identifier 
-		 */
-		$reply = trim(fgets($this->socket, 512));
-		switch (substr($reply, 0, 1)) {
+	}
 
-			case '+': $response = substr(trim($reply), 1); break;
-			case '-': throw new RedisException(substr(trim($reply), 4)); break;
-			case ':': $response = intval(substr(trim($reply), 1)); break;
-			case '$':
-				$response = null;
+	private function responseInt($reply){
+		return array('int', intval(substr(trim($reply), 1))); 
+	}
 
-				// If the following happens, it means that the key does not exist
-				// and so we leave $response as null.
-				if ($reply == '$-1') {
-					break;
-				}
-				$read_so_far = 0;
-				$size        = substr($reply, 1);
-				do {
-					$read_ptr     = min(1024, ($size - $read_so_far));
-					$response    .= fread($this->socket, $read_ptr);
-					$read_so_far += $read_ptr;
-				} while ($read_so_far < $size);
-				fread($this->socket, 2); 
-				break;
+	private function responseMinus($reply){
+		throw new RedisException(substr(trim($reply), 4));
+	}
 
-			case '*':
-				$count = substr($reply, 1);
-				if ($count == '-1') {
-					return null;
-				}
-				$response = array();
-				for ($i = 0; $i < $count; $i++) {
-					$bulk_head = trim(fgets($this->socket, 512));
-					$size      = substr($bulk_head, 1);
-					if ($size == '-1') {
-						$response[] = null;
-					} else {
-						$read_so_far = 0;
-						$block = "";
-						do {
-							$read_ptr     = min(1024, ($size - $read_so_far));
-							$block       .= fread($this->socket, $read_ptr);
-							$read_so_far += $read_ptr;
-						} while ($read_so_far < $size);
-						fread($this->socket, 2); 
-						$response[] = $block;
-					}
-				}
-				break;
+	private function responsePlus($reply){
+		return array('plus', substr(trim($reply), 1));  
+	}
 
-			default:
-				throw new RedisException("server response makes no sense to me: {$reply}");
-				break;
+	private function responseMulti($reply){
+		$response = null;
+		if ($reply == '$-1') { // key does not exist
+			break;
 		}
-		$counts         = array_count_values($args);
-		$number_of_gets = $counts['get'];
-		$response       = array_chunk($response, $number_of_gets);
+		$response = $this->getMultiResponse();
+		fread($this->socket, 2); 
+        return array('multi', $response);
+	}
+
+	private function responseMultiMany($reply){
+		$count = substr($reply, 1);
+		if ($count == '-1') {
+			return null;
+		}
+		$response = array();
+		for ($i = 0; $i < $count; $i++) {
+			$bulk_head = trim(fgets($this->socket, 512));
+			$size      = substr($bulk_head, 1);
+			if ($size == '-1') {
+				$response[] = null;
+			} else {
+				$response[] = $this->getMultiResponse();
+			}
+		}
+		return array('star', $response);
+	}
+
+	private function getMultiReponse(){
+		$response = '';
+		$read_so_far = 0;
+		$size = substr($reply, 1);
+		do {
+			$read_pos     = min(1024, ($size - $read_so_far));
+			$response    .= fread($this->socket, $read_pos);
+			$read_so_far += $read_pos;
+		} while ($read_so_far < $size);
 		return $response;
 	}
 
