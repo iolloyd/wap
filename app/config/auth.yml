@@ -4,12 +4,15 @@ all:
     auth_template   : auth/login # this default can be overriden
         
     authorized_users:
+        _lookup: { controller: auth, method: getAuthorizedUsers }
         lloyd: thesame
         lionel: jefe
+
     secure_methods:
         admin: 
+        game: 
+            - play 
+    salt: mnilmailf23938393448r9ieoeoeinbxzsse
 dev:
     authorized_users:
         user: pass 
-    secure_methods:
-        admin: 
