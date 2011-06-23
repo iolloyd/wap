@@ -31,9 +31,9 @@ class orm {
 		return $this->getBy('id', $id);
 	}
 
-	public function getChildren(){
+	public function getChildren($table){
 		//find tables that have $table_id in their columns
-		$query = 'select distinct table_name from information_schema where table_schema=';
+		$query = 'select distinct table_name from information_schema where table_schema='.$table;
 	}
 
 	public function remove(){
@@ -64,17 +64,13 @@ class orm {
 		return $query;
 	}
 
-	private function runQuery($query, $count=false){
+	private function runQuery($query, $out=array()){
 		$q = @mysql_query($query);
-		$n = mysql_num_rows($q);
-		if ($n) {
-			$out = array();
-			while($n-- > 0) {
-				$out[] = mysql_fetch_assoc($q);
-			}
+		if (mysql_num_rows($q)) {
+			while($out[] = mysql_fetch_assoc($q));
 			return $out;
 		} else {
-			throw new Exception("Crappy query results");
+			throw new Exception("Nada!");
 		}
 	}
 
