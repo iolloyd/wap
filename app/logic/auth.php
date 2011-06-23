@@ -43,4 +43,10 @@ class auth extends controller {
     private function getSalt(){
         return config::read('salt', 'auth');
     }
+
+    public function signout(){
+        $_SESSION['is_authorized'] = 0;
+        $this->redirect('/main/index');
+    }
+
 }
