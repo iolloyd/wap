@@ -52,16 +52,16 @@ class lloydredis {
 		$this->sendCmd($cmd);
 		$reply = trim(fgets($this->socket, 512));
 		switch (substr($reply, 0, 1)) {
-			case '-': list($type, $response) = $this->responseMinus($reply)  ; break; 
-			case '+': list($type, $response) = $this->responsePlus($reply)   ; break; 
-			case ':': list($type, $response) = $this->responseInt($reply)    ; break; 
-			case '$': list($type, $response) = $this->responseMulti($reply) ; break; 
-			case '*': list($type, $response) = $this->responseMultiMany($reply)   ; break; 
+			case '-': $response = $this->responseError($reply)     ; break ; 
+			case ':': $response = $this->responseInt($reply)       ; break ; 
+			case '$': $response = $this->responseMulti($reply)     ; break ; 
+			case '*': $response = $this->responseMultiMany($reply) ; break ; 
+			case '+': $response = $this->responseSimple($reply)    ; break ; 
 			default:
 				throw new RedisException('No entiendo la respuesta del servidor de redis: ' . $reply);
 				break;
 		}
-		$response = $this->prepareResponse($response);
+		$response = $this->prepareResponse($type, $response);
 		return $response;
 	}
 
@@ -73,6 +73,14 @@ class lloydredis {
 		$cmd  = sprintf('*%d%s%s%s', count($args), NL, $this->withLengths($args), NL);
 		$done = 0;
     }
+
+	private function prepareResponse(array $response_details){
+		list($type, $response) = $response_details);
+
+		// Do something with response depending on gets or type
+
+		return $response;
+	}
 
 	private function sendCmd($cmd){
 		for ($w = 0, $cmdlen = strlen($cmd); $w < $cmdlen; $w += $done) {
@@ -88,11 +96,11 @@ class lloydredis {
 		return array('int', intval(substr(trim($reply), 1))); 
 	}
 
-	private function responseMinus($reply){
+	private function responseError($reply){
 		throw new RedisException(substr(trim($reply), 4));
 	}
 
-	private function responsePlus($reply){
+	private function responseSimple($reply){
 		return array('plus', substr(trim($reply), 1));  
 	}
 
@@ -117,7 +125,7 @@ class lloydredis {
 			$size      = substr($bulk_head, 1);
 			$response[] = ($size == '-1') ? null : $this->getMultiResponse();
 		}
-		return array('star', $response);
+		return array('multimany', $response);
 	}
 
 	private function getMultiReponse(){
