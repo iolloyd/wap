@@ -19,7 +19,7 @@ class auth extends controller {
 		}
 	}
 
-    public function storeUserAndPwd($user, $pwd){
+    public function storedPwd($user, $pwd){
         $salt = $this->getSalt();
         $pwd  = sha1($salt.$pwd);
         $this->r->hset($user, 'pwd', $pwd);
