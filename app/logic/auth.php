@@ -14,28 +14,33 @@ class auth extends controller {
 			$_SESSION['is_authorized'] = true;
 			$this->redirect('/admin');
 		} else {
+            $class  = $cfg['_lookup']['controller'];
+            $method = $cfg['_lookup']['method'];
+            return call_user_func_array(array($class, $method), array());
 			echo 'You are not authorized to be here';
 			$this->template('auth/login');
 		}
 	}
 
-    public function storedPwd($user, $pwd){
+    public function storePassword($user, $pwd){
         $salt = $this->getSalt();
         $pwd  = sha1($salt.$pwd);
-        $this->r->hset($user, 'pwd', $pwd);
+        $this->r->hset($user, 'password', $pwd);
     }
 
-    public function checkPwd($user){
-        $salt = $this->getSalt();
-        $pwd = $this->r->hget($user);
-        return $pwd == sha1($salt.$pwd);
+    public function checkCredentials($user, $entered_password){
+        $salt            = $this->getSalt();
+        $stored_password = $this->r->hget($user, 'password');
+        return $stored_password == sha1($salt.$entered_password);
     }
 
-    public function getAuthorizedUsers(){
-        $users = $this->r->hgetk
+    public function isAuthorizedUser($user){
+        $users = $this->r->smembers('authorized_users');
+        list($user, $pwd) = explode(':', $user);
+        return $this->checkCredentials($user, $pwd);
     }
 
     private function getSalt(){
-        return 'mnilmailfatiwIalfTgSe';
+        return config::read('salt', 'auth');
     }
 }
