@@ -1,25 +1,23 @@
 <?php
 class rlog extends controller{
-	public function registerHit(){
+    public function registerHit(){
 
-		// Register the epoch time for the caller's REMOTEIP address
+        // Register the epoch time for the caller's REMOTEIP address
 
-		$time_now = time();
-		$last_entry = $this->r->get('last_entry:'.REMOTEIP);
-		$time_since = $time_now - $last_entry; 
-		$this->r->set('time_since_last_entry:'.REMOTEIP, $time_since);
-		$this->r->set('last_entry:'.REMOTEIP, $time_now);
+        $time_now = time();
+        $last_entry = $this->r->get('last_entry:'.REMOTEIP);
+        $time_since = $time_now - $last_entry; 
+        $this->r->hset('times:entries', 'since', $time_since);
+        $this->r->hset('times:entries', 'time', $time_since);
 
-		// Register which method was called
-		// for statistical info
+        // Register which method was called
+        // for statistical info
 
-		$k = CONTROLLER.':'.METHOD;
 
-		$this->r->incr(date('y:m:d:h:i').':'.$k);
-		$this->r->incr(date('y:m:d:h').':'.$k);
-		$this->r->incr(date('y:m:d').':'.$k);
-		$this->r->incr(date('y:m').':'.$k);
+        $k = CONTROLLER.':'.METHOD;
+        $this->r->zadd('calls', 0, $k);
+        $this->r->zincrby('hit:'.$k, 1, date('Ymd'));
 
-	}
+    }
 }
 

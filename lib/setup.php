@@ -1,5 +1,4 @@
 <?php
-session_start();
 date_default_timezone_set('Europe/Madrid');
 
 define('REMOTEIP'      , $_SERVER['REMOTE_ADDR']);

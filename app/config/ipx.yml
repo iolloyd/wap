@@ -30,6 +30,7 @@ all:
         password             : "A91F7nb3"
         returnURL            : "http://juganar.com/main/alias2"
         redirectURL          : "http://juganar.com/main/alias2"
+        purchaseRedirect     : "http://juganar.com/main/purchase2"
         host_sms_api         : "sms.xml"
         host_sub_api         : "sub.xml"
         frequencyInterval    : 3 
