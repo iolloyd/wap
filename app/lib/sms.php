@@ -11,7 +11,7 @@ class sms extends ipx {
 		$this->init($this->wsdl_file);
 	}
 
-	public function sendBillingSms($phone, $reference_id, $tariff='EUR300', $password=false) {
+	public function sendBillingSms($phone, $reference_id, $tariff='EUR300ES', $password=false) {
 		$text = config::read('billing', 'messages');
 		if ($password) {
 			$text = str_replace('{PASSWORD}', $password, $text);
@@ -41,7 +41,7 @@ class sms extends ipx {
 		$overrides = array(
 			'destinationAddress' => $phone,
 			'userData'           => $text,
-			'tariffClass'        => 'EUR300'
+			'tariffClass'        => 'EUR300ES'
 		);
 
 		return $this->makeCall('send', $overrides);

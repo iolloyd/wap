@@ -1,11 +1,12 @@
 all:
     routes:
-        admin: { controller: admin, method: index }
-        play:  { controller: game,  method: play }
-        signout: {controller: auth, method: signout }
+        admin:   { controller: admin, method: today}
+        play:    { controller: game,  method: play }
+        signout: { controller: auth,  method: signout }
+        hits:    { controller: hits,  method: getPages }
     ab:
+
 dev:
     routes:
         admin: { controller: admin, method: index }
     ab:
-

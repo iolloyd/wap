@@ -1,3 +1,4 @@
 all:
     plugins:
         rstats: {class: rlog,  method: registerHit}
+        ab:     {class: ab,    method: run}

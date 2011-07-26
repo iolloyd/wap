@@ -1,0 +1,9 @@
+all:
+  routes:
+    -
+      controller: main 
+      method: index
+      style: even # random 
+      options:
+        - {controller: main, method: index, weight: 1}
+        - {controller: main, method: fodex, weight: 1}

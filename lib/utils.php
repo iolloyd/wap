@@ -107,7 +107,6 @@ function run(){
         'method'     => $method,
         'vars'       => $vars
     ));
-    $vars = array('vars' => $vars);
     if (secureUri($controller, $method)) {
         if (!isLoggedIn()) {
             $controller = 'auth';

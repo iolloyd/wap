@@ -1,12 +1,15 @@
 <?php
 class ipx {
     private   $cfg;
-    protected $soap_client,
-              $wsdl_file;
+    protected $r, $wsdl_file;
 
     public function __construct($wsdl_file){
         $this->r = new dbredis();
         $this->init($wsdl_file);
+    }
+
+    public function __call($method, $overrides){
+        return $this->makeCall($method, $overrides); 
     }
 
     public function init($wsdl_file){
@@ -58,6 +61,7 @@ class ipx {
     }
 
     private function showDebugInfo($direction, $method, $data){
+        return true;
         $time = date("Y-m-d h:i:s");
         if (is_object($data)) {
             $data = Helpers::convertStdToArray($data);

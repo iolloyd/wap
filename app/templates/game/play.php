@@ -4,12 +4,13 @@
     <legend>Pop Quiz</legend>
 <?
 for ($x=0; $x < count($questions), $q=@$questions[$x]; $x++){
+        echo "<br/>";
     echo "<div class='question'><p>".($x+1) . ' ' . $q['question']."</p>";
-	echo "<ul>";
-	foreach ($q['options'] as $choice) {
-		echo "<li><input name='answers[]' type='checkbox' value='".$choice."'/> ".$choice."</li>";
-	}
-	echo "</ul></div>";
+    echo "<ul>";
+    foreach ($q['options'] as $choice) {
+        echo "<li><input name='answers[]' type='checkbox' value='".$choice."'/> ".$choice."</li>";
+    }
+    echo "</ul></div>";
 }
 ?>
 <input type='hidden' name='time' value='<?=$time?>'/>

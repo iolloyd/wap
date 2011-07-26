@@ -35,7 +35,7 @@ class game extends controller {
             function($x) {return $x['answer'];}, 
             config::read('questions', 'questions')
         );
-        $answers   = $_POST['answers'];
+        $answers   = @$_POST['answers'] ? $_POST['answers'] : array();
         $good = array_filter( $answers, function($x) use ($correct) {
                 if (in_array($x, $correct)) return $x; }
         );

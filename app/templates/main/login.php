@@ -1,30 +1,27 @@
 <div id="header">
-	<div class="contentHeader">
+    <div class="contentHeader">
     </div>
 </div>
 
 <div id="page">
   <div class="manolito"></div>
   <div class="ipads"></div>
-  <form name="confirmpwd" id="confirmpwd" action="">
+  <form name="confirmpwd" id="confirmpwd" action="/main/finally">
     <div id="step1">
     
     <div id="login">
-    	<div class="top"></div>
+        <div class="top"></div>
         <div class="content">
-        	<div class="cursor"></div>
-        	<h4>INTRODUCE EL CÓDIGO QUE TE HEMOS ENVIADO A TU MOVIL:</h4>
-            <table class="password">
-            	<tr>
-                	<td width="80"><label for="password">Código</label></td>
-                    <td><input type="password" name="password" id="password" /></td>
-                </tr>
-            </table>
-            <p class="small">Te hemos enviado un SMS con tu código promocional. Introdúcelo y pulsa "SIGUIENTE"</p>
+            <div class="cursor"></div>
+            <h4> Ahora, abre el enlace que te acabo de mandar.  </h4>
+            <br/>
+            <h4> Te espero para seguir jugando.  </h4>
+            <br/>
+
+            <h4>6 Preguntas más y podras GANAR UN IPAD2!</h4>
         </div>
         <div class="bottom"></div>
     </div>
-    <input type="submit" id="submitlogin" value="Enviar" style="display:none" />
     <p class="small" id="condiciones">*<a href="#">Ver las condiciones de servicio de suscripción</a> y <a href="#">privacidad de datos</a>.</p>
     </div>
 </form>    
@@ -32,7 +29,7 @@
 <div id="bottomPage"></div>
 <script type="text/javascript">
 $(document).ready(function(){
-	login()
+    login()
 })
 </script>
 

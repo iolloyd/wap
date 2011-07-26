@@ -161,10 +161,11 @@ class helpers {
         return $out;
     }
 
-    public static function cleanPhoneNumber($phone, $prefix='34') {
+    public static function cleanPhoneNumber($phone, $prefix='') {
         $phone = trim($phone);
-        $phone = ltrim($phone, '+0');
-        $phone = preg_replace('/^34/', '', $phone);
+        $phone = ltrim($phone, '+');
+        $phone = ltrim($phone, '0');
+        $phone = preg_replace('/^31/', '', $phone);
         $phone = str_replace('-','', $phone);
         $phone = str_replace(' ','', $phone);
         $phone = $prefix.''.$phone;

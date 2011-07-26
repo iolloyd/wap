@@ -1,10 +1,27 @@
-<div>
-	<div> <?=$views_today?>       </div>
-	<div> <?=$views_seven_days?>  </div>
-	<div> <?=$views_thirty_days?> </div>
-</div>
-<div>
-	<div> <?=$conversions_today?>       </div>
-	<div> <?=$conversions_seven_days?>  </div>
-	<div> <?=$conversions_thirty_days?> </div>
-</div>
+<h4>Sales Yesterday</h4>
+<table>
+  <tr>
+  <? foreach (array_keys($sales_yesterday) as $x): ?>
+      <td><?=$x?></td>
+  <? endforeach ?>
+  </tr>
+  <tr>
+  <? foreach (array_values($sales_yesterday) as $x): ?>
+      <td><?=$x?></td>
+  <? endforeach ?>
+  </tr>
+</table>
+
+<h4>Sales Today</h4>
+<table>
+  <tr>
+  <? foreach (array_keys($sales_today) as $x): ?>
+      <td><?=$x?></td>
+  <? endforeach ?>
+  </tr>
+  <tr>
+  <? foreach (array_values($sales_today) as $x): ?>
+      <td><?=$x?></td>
+  <? endforeach ?>
+  </tr>
+</table>

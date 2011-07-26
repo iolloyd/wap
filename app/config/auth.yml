@@ -10,8 +10,6 @@ all:
 
     secure_methods:
         admin: 
-        game: 
-            - play 
     salt: mnilmailf23938393448r9ieoeoeinbxzsse
 dev:
     authorized_users:

@@ -1,9 +1,32 @@
 ul#admin_menu li {
-	display: inline;
+    display: inline;
 }
 .hidden {
-	display: none;
+    display: none;
 }
 .confirm_success, .billing_success{
-	color:green;
+    color:green;
 }
+#content{
+    margin:10px 20px;
+}
+dt {
+    float:left;
+}
+dd {
+    margin-left:200px;
+}
+li {
+    height: 16px;
+    width: 25px;
+}
+body#yesterday #yesterday,
+body#today #today,
+body#week #week,
+body#hits #hits,
+body#getPages #getPages,
+body#month #month {
+    font-weight: bold;
+    border-bottom:4px solid green;
+}
+

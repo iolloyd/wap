@@ -1,4 +1,5 @@
 all:
-    free: "Haz clic http://juganar.com/main/playwin right now"
-    pin:  "Tu contraseña es tu numero de movil. Ahora puedes jugar http://juganar.com/play
+    code: "Tu codigo pin es {pin}"
+    free: "Abre el siguiente enlace para seguir jugando. http://juganar.com/main/playwin"
+    pin:  "Tu pin es {pin} y ahora puedes jugar http://juganar.com/playwin
 

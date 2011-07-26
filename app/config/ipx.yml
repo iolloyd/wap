@@ -13,11 +13,10 @@ all:
         PID                  : -1
         relativeValidityTime : -1
         deliveryTime         : "#NULL#"
-        #statusReportFlags   : 1
         statusReportFlags    : 0
         accountName          : "BusinessConnect_LocalTime"
-        tariffClass          : EUR300
-        subscription_tariff  : EUR150
+        tariffClass          : EUR300ES
+        subscription_tariff  : EUR150ES
         VAT                  : -1
         referenceId          : "#NULL#"
         serviceName          : "IPXWAP"

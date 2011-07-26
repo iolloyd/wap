@@ -5,21 +5,13 @@
     <div id="step1">
     
     <div id="calification">
-    	<div class="top"></div>
+        <div class="top"></div>
         <div class="content">
-        	<h4>ESTE ES TU RESULTADO FINAL:</h4>
-            <table class="log">
-            	<tr>
-                	<td class="left">Tiempo transcurrido:</td>
-                    <td class="right">03:59 min</td>
-                </tr>
+            <h4>ESTE ES TU RESULTADO FINAL:</h4>
+            <table summary='summary of answers' class="log">
                 <tr>
-                	<td class="left">Preguntas contestadas:</td>
-                    <td class="right">6</td>
-                </tr>
-                <tr>
-                	<td class="left">Respuestas correctas</td>
-                    <td class="right">3</td>
+                    <td class="left">Respuestas correctas</td>
+                    <td class="right">SECRETO</td>
                 </tr>
             </table>
             <h3 class="result">SUFICIENTE</h3>
