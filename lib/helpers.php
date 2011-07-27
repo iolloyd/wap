@@ -1,5 +1,9 @@
 <?php
 class helpers {
+	/**
+	 * Takes an array of 2 values and converts it
+	 * to a 'key=value' string
+	 */
     public static function pairs2EqStrings(array $a){
         $out = array();
         foreach ($a as $k => $v) {
@@ -29,17 +33,6 @@ class helpers {
             }
         }
         return $pwd;
-    }
-
-    public static function logHit($controller, $method){
-        $r = new dbredis();
-        $c_m = $controller.':'.$method;
-        $r->incr($c_m.':'.date('y:m:d:h:i'));
-        $r->incr($c_m.':'.date('y:m:d:h'));
-        $r->incr($c_m.':'.date('y:m:d'));
-        $r->incr($c_m.':'.date('y:m'));
-        $r->incr($c_m.':'.date('y'));
-        $r->incr($c_m);
     }
 
     public static function unCamelize($word){
@@ -108,6 +101,10 @@ class helpers {
         }
     }
 
+	/**
+	 * Removes blank entries from an series of
+	 * values in an array
+	 */
     public static function noBlanks($array){
         $out = array();
         foreach ($array as $a) {
@@ -149,7 +146,7 @@ class helpers {
     }
 
     /**
-     * Converts a std object to an array.
+     * Converts a std object to a hash type array.
      * @param object $obj
      * @return array $ob
      */
@@ -161,6 +158,10 @@ class helpers {
         return $out;
     }
 
+	/**
+	 * Properly formats a phone number according to a prefix,
+	 * usually dependant on the country code
+	 */
     public static function cleanPhoneNumber($phone, $prefix='34') {
         $phone = trim($phone);
         $phone = ltrim($phone, '+0');
@@ -176,6 +177,12 @@ class helpers {
         $end   = strftime($end);
     }
 
+	/**
+	 * Returns the datetime relative to the units
+	 * and amounts specified. For example, to find
+	 * the datetime 2 days ago you would call this
+	 * method with $unit='day', $amount=2
+	 */
     public static function beforeNow($unit, $amount){
         $units = array(
             'second' => 1,
