@@ -16,6 +16,12 @@
 
 		<dt>Sales</dt>
 		<dd><?= $sales ?: 0?> <?= $sales ? '('.round($sales/$visits*100,1).'%)' : '' ?></dd>
+
+		<dt>Phone numbers entered</dt>
+		<dd><?= $phone_entered ?: 0?> <?= $phone_entered ? '('.round($phone_entered/$visits*100,1).'%)' : '' ?></dd>
+
+		<dt>...Entered and email sent</dt>
+		<dd><?= $phone_entered_and_email_sent ?: 0?> <?= $phone_entered_and_email_sent ? '('.round($phone_entered_and_email_sent/$visits*100,1).'%)' : '' ?></dd>
 	</dl>
 </div>
 <div class='fleft'>
