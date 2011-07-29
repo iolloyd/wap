@@ -79,12 +79,8 @@
             <div class="content">
                 <h4>TU N&Uacute;MERO DE MOVIL:</h4>
                 <table summary='questions' class="questions">
-                    <tr>
-                      <td width="220"><label for="telefono">¿Cuál es tu número de movil?</label></td>
-                        <td>
-                            <input type="text" name="telefono" id="telefono" pattern='\d{6,9}' />
-                        </td>
-                    </tr>
+                    <tr> <td width="220"><label for="telefono">¿Cuál es tu número de movil?</label></td> <td> <input type="text" name="telefono" id="telefono" pattern='\d{6,9}' /> </td> </tr>
+                    <tr> <td width="220"><label for="telefono">¿Tienes una contraseña?</label></td> <td> <input type="text" name="contrasenya" id="contrasenya" /> </td> </tr>
                     <tr>
                         <td></td>
                         <td>
