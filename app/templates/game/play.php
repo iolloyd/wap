@@ -1,6 +1,6 @@
 <div class='manolito'></div>
 <div class='ipads'><br/></div>
-<form class='questions' action='' method='post' name='play_form'>
+<form class='questions' action='/game/play' method='post' name='play_form'>
     <legend>Pop Quiz</legend>
 <?
 for ($x=0; $x < count($questions), $q=@$questions[$x]; $x++){
