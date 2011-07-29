@@ -24,6 +24,11 @@ class config {
 		}
 	}
 
+	public static function get($section, $file=false){
+		if (!$file) $file = $section;
+		return self::read($section, $file);
+	}
+
 	public static function readForm($section) {
 		$config  = Spyc::YAMLLoad(FORMSDIR . '/' . $section.'.yml');
 		$section = $config[$section];
