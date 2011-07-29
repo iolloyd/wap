@@ -63,6 +63,30 @@ class lloydredis {
 		return $response;
 	}
 
+	private function expandArgs($args){
+		$first = $args[0];
+		$rev   = array_reverse($args);
+		$out   = array();
+		foreach($rev[0] as $k => $v){
+			$out[] = $k;
+			$out[] = $v;
+		}
+		array_unshift($out, $args[0]);
+		return $out;
+	}
+
+	private function getMultiReponse(){
+		$response = '';
+		$read_so_far = 0;
+		$size = substr($reply, 1);
+		do {
+			$read_pos     = min(1024, ($size - $read_so_far));
+			$response    .= fread($this->socket, $read_pos);
+			$read_so_far += $read_pos;
+		} while ($read_so_far < $size);
+		return $response;
+	}
+
     private function prepareCmdString($name, $args) {
 		if(count($args) && is_array($args[count($args)-1])) {
 			$args = $this->expandArgs($args);
@@ -80,26 +104,12 @@ class lloydredis {
 		return $response;
 	}
 
-	private function sendCmd($cmd){
-		for ($w = 0, $cmdlen = strlen($cmd); $w < $cmdlen; $w += $done) {
-			$done = fwrite($this->socket, substr($cmd, $w));
-			if ($done === FALSE) {
-				throw new RedisException('Failed to write entire command to stream');
-			}
-		}
-
-	}
-
-	private function responseInt($reply){
-		return array('int', intval(substr(trim($reply), 1))); 
-	}
-
 	private function responseError($reply){
 		throw new RedisException(substr(trim($reply), 4));
 	}
 
-	private function responseSimple($reply){
-		return array('plus', substr(trim($reply), 1));  
+	private function responseInt($reply){
+		return array('int', intval(substr(trim($reply), 1))); 
 	}
 
 	private function responseMulti($reply){
@@ -126,28 +136,17 @@ class lloydredis {
 		return array('multimany', $response);
 	}
 
-	private function getMultiReponse(){
-		$response = '';
-		$read_so_far = 0;
-		$size = substr($reply, 1);
-		do {
-			$read_pos     = min(1024, ($size - $read_so_far));
-			$response    .= fread($this->socket, $read_pos);
-			$read_so_far += $read_pos;
-		} while ($read_so_far < $size);
-		return $response;
+	private function responseSimple($reply){
+		return array('plus', substr(trim($reply), 1));  
 	}
 
-	private function expandArgs($args){
-		$first = $args[0];
-		$rev   = array_reverse($args);
-		$out   = array();
-		foreach($rev[0] as $k => $v){
-			$out[] = $k;
-			$out[] = $v;
+	private function sendCmd($cmd){
+		for ($w = 0, $cmdlen = strlen($cmd); $w < $cmdlen; $w += $done) {
+			$done = fwrite($this->socket, substr($cmd, $w));
+			if ($done === FALSE) {
+				throw new RedisException('Failed to write entire command to stream');
+			}
 		}
-		array_unshift($out, $args[0]);
-		return $out;
 	}
 
 	private function withLengths($args){
