@@ -18,36 +18,16 @@ class main extends controller {
             exit();
         }
         $phone  = helpers::cleanPhoneNumber($_POST['telefono'], '34');
-        $look   = new consumerlookup();
-        $lookup = $look->resolveOperator(array(
-            'consumerId'    => $phone,
-            'correlationId' => 'IPXWAP',
-            'username'      => $this->getSubscriptionUser(),
-            'password'      => $this->getSubscriptionPwd(),
-        ));
-
-        $this->r->zincrby('operator', 1, $lookup->operator);
-        $this->r->zincrby('operator:'.date('Ymd'), 1, $lookup->operator);
-
-        $out = $this->subscriptionGetSubscriptionStatus();
-        if ($out && $out->subscriptionStatus == 1) {
-			$this->template('main/already', array(
-			   $msg => 'Already subscribed'
-			));
-		}
-        if ($lookup->operator == 'AIRTEL') {
-            $this->r->zincrby('sent_to_vodafone', 1, date('Ymd'));
-            $out = $this->subscribeAsVodafone($phone);
-            if ($out->redirectURL) {
-                header('Location: '.$out->redirectURL);
-                exit();
-            }
-        }
-        $sms        = new sms();
-        $text       = config::read('free', 'messages');
+        $this->r->zincrby('phone_entered', 1, date('Ymd'));
+        $this->checkForRegisteredUser($phone);
+        $lookup = $this->getOperator($phone);
+        $this->storeOperatorStatistics($lookup);
+        $this->checkIfAlreadySubscribed();
+        $this->handleVodafoneUser($lookup, $phone);
+        $out        = $this->sendInitialSms($phone);
         $out->phone = $phone;
-        $out        = $sms->sendSms($phone, $text, $tariff='EUR0');
         $this->r->save('sms', $out);
+        $this->r->zincrby('phone_entered_and_email_sent', 1, date('Ymd'));
         $this->r->zincrby('send_sms', 1, date('Ymd'));
         $this->template('main/login');
     }
@@ -186,11 +166,10 @@ class main extends controller {
             }
             $this->storePinForConsumer($pin);
         } else {
-			$this->template('main/already', array($msg => 'Ya tienes un subscripcion'));
-			die;
+            $this->template('main/already', array($msg => 'Ya tienes un subscripcion'));
+            die;
             try {
                 $out = $this->subscriptionCreateSubscriptionSession();
-
                 // After this redirect, we will return to "chargeuser2"
                 header('Location: '.$out->redirectURL);
                 exit();
@@ -267,9 +246,10 @@ class main extends controller {
             'sessionId' => $session_id
         ));
         $this->r->save('sub_capture_payment', $out);
+        $this->setPassword($this->getAlias());
         if ($out->responseMessage == 'Success') {
             $this->storeChargeDetails();
-			$this->storeAliasWithSubscription();
+            $this->storeAliasWithSubscription();
             $this->template('main/simple');
             // return $out;
         } else {
@@ -292,13 +272,13 @@ class main extends controller {
         ));
     }
 
-	private function setConsumerSubscription(){
-		$this->r->set('subscriptionForConsumer:'.$this->getConsumerId(), $this->getSubscriptionId());
-	}
+    private function setConsumerSubscription(){
+        $this->r->set('subscriptionForConsumer:'.$this->getConsumerId(), $this->getSubscriptionId());
+    }
 
-	private function getConsumerSubscription(){
-		return $this->r->get('subscriptionForConsumer:'.$this->getConsumerId());
-	}
+    private function getConsumerSubscription(){
+        return $this->r->get('subscriptionForConsumer:'.$this->getConsumerId());
+    }
 
     private function subscribeAsVodafone($phone){
         $out = $this->subscriptionCreateSubscriptionSession('EUR300ES', true, $phone);
@@ -308,7 +288,9 @@ class main extends controller {
         }
     }
 
-    private function subscriptionCreateSubscriptionSession($tariff_class='EUR300ES', $vodafone=false, $phone=false){
+    private function subscriptionCreateSubscriptionSession(
+        $tariff_class='EUR300ES', $vodafone=false, $phone=false
+    ){
         $sub = new subscription();
         $data = array(
             'username'          => $this->getSubscriptionUser(),
@@ -361,14 +343,13 @@ class main extends controller {
             $out = $this->subscriptionAuthorizePayment($out->subscriptionId);
             $this->subscriptionCapturePayment($out->sessionId);
         } catch (Exception $e) {
-            $this->setSubscriptionId(null);
             echo $e->getMessage();
             exit();
         }
     }
  
     public function getConsumerId(){
-        $alias = $this->getAlias();
+        $alias       = $this->getAlias();
         $consumer_id = $this->r->get('consumerid:'.$alias);
         return $consumer_id;
     }
@@ -516,8 +497,10 @@ class main extends controller {
         $this->r->set('alias:'.session_id(), $alias);
     }
 
-    private function getAlias(){
-        return $this->r->get('alias:'.session_id());
+    private function getAlias($phone=false){
+        return $phone 
+            ? $this->r->get('alias:'.$phone)
+            : $this->r->get('alias:'.session_id());
     }
 
     private function storeChargeDetails(){
@@ -525,4 +508,74 @@ class main extends controller {
         $this->r->zincrby('signup_by_day:'.$month, 1, $day);
         $this->r->zincrby('signup_by_hour:'.$day, 1, $hour);
     }
+
+    ///////////////////////////////
+
+    private function checkForRegisteredUser($phone){
+        if ($_POST['contrasenya']) {
+            $pwd      = $this->getPassword($phone);
+            $template = (trim($pwd) == trim($_POST['contrasenya'])) ? 'game/play' : 'main/index';
+            $this->template($template, array(
+                'time'      => time(),
+                'questions' => config::get('questions', 'questions')
+            )); 
+            die;
+        }
+    }
+
+    private function setPassword($phone, $pwd=false){
+        $pwd = $pwd ?: helpers::generatePassword();
+        $this->r->hset('password', $phone, $pwd);
+    }
+
+    private function getPassword($phone){
+        return $this->r->hget('password', $phone);
+    }
+
+    private function storeOperatorStatistics($lookup){
+        $this->r->zincrby('operator', 1, $lookup->operator);
+        $this->r->zincrby('operator:'.date('Ymd'), 1, $lookup->operator);
+    }
+
+    private function getOperator($phone){
+        $look   = new consumerlookup();
+        return $look->resolveOperator(array(
+            'consumerId'    => $phone,
+            'correlationId' => 'IPXWAP',
+            'username'      => $this->getSubscriptionUser(),
+            'password'      => $this->getSubscriptionPwd(),
+        ));
+    }
+
+    private function sendInitialSms($phone){
+        $sms        = new sms();
+        $text       = config::read('free', 'messages');
+        $out = $sms->sendSms($phone, $text, $tariff='EUR0');
+        return $out;
+    }
+
+    private function checkIfAlreadySubscribed(){
+        //return true;
+        $out = $this->subscriptionGetSubscriptionStatus();
+        //print_r($out); die;
+        $this->r->save('check:subscribed', $out);
+        if ($out && $out->subscriptionStatus == 1) {
+            $this->template('main/already', array(
+               'msg' => 'Ya no se puede con este numero del telefono'
+            ));
+            die;
+        }
+    }
+
+    private function handleVodafoneUser($lookup, $phone){
+        if ($lookup->operator == 'AIRTEL') {
+            $this->r->zincrby('sent_to_vodafone', 1, date('Ymd'));
+            $out = $this->subscribeAsVodafone($phone);
+            if ($out->redirectURL) {
+                header('Location: '.$out->redirectURL);
+                exit();
+            }
+        }
+    }
+
 }
