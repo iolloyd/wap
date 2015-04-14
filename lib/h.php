@@ -1,5 +1,5 @@
 <?php
-class helpers {
+class Helper {
     public static function pairs2EqStrings(array $a){
         $out = array();
         foreach ($a as $k => $v) {
@@ -20,8 +20,7 @@ class helpers {
 
     public static function generatePassword($len=4) {
         $pwd     = "";
-        //$choices = "0123456789bcdfghjkmnpqrtvwxyzBCDFGHJKLMNPQRTVWXYZ";
-        $choices = "0123456789";
+        $choices = "0123456789bcdfghjkmnpqrtvwxyzBCDFGHJKLMNPQRTVWXYZ";
         while (strlen($pwd) < $len) { 
             $chr = substr($choices, mt_rand(0, strlen($choices)-1), 1);
             if (!strstr($pwd, $chr)) { 
@@ -31,14 +30,18 @@ class helpers {
         return $pwd;
     }
 
-    public static function logHit($controller, $method){
+    public static function logHit($controller, $method, $grain='ymdhi'){
         $r = new dbredis();
         $c_m = $controller.':'.$method;
-        $r->incr($c_m.':'.date('y:m:d:h:i'));
-        $r->incr($c_m.':'.date('y:m:d:h'));
-        $r->incr($c_m.':'.date('y:m:d'));
-        $r->incr($c_m.':'.date('y:m'));
-        $r->incr($c_m.':'.date('y'));
+        $dateParts = ['y', 'm', 'd', 'h', 'i'];
+        foreach ($dateParts as $part) {
+            if ($pos = strpos($grain, $part) === true) {
+               $dateKey = array_slice($dataParts, 0, $pos + 1);
+                $r->incr($c_m.':'.date(implode(':', $dateKey));
+
+            }
+        }
+
         $r->incr($c_m);
     }
 
