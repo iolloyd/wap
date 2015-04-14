@@ -4,11 +4,11 @@ require_once "lloydredis.php";
 
 class qedis {
 
-	public function __construct($host=null, $port=null){
-		$this->r = new lloydredis($host, $port);
+	public function __construct($connection) {
+		$this->r = $connection;
 	}
 
-	public function add($group, $data){
+	public function add($group, $data) {
 		$id     = $this->getNextId($group);
 		$member = "$group:$id";
 		$this->r->hmset($member, $data);
@@ -61,7 +61,4 @@ class qedis {
 	private function wordOfInt($int){
 		return $this->r->hget('wordcache', $int);
 	}
-
 }
-
-

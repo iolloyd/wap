@@ -2,15 +2,16 @@ all:
     auth_controller : auth       # this default can be overriden
     auth_method     : login      # this default can be overriden
     auth_template   : auth/login # this default can be overriden
-        
+
     authorized_users:
         _lookup: { controller: auth, method: getAuthorizedUsers }
         lloyd: thesame
         lionel: jefe
 
     secure_methods:
-        admin: 
+        admin:
     salt: mnilmailf23938393448r9ieoeoeinbxzsse
+
 dev:
     authorized_users:
-        user: pass 
+        user: pass

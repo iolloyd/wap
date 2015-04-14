@@ -1,5 +1,5 @@
 <?php
-class orm {
+class Orm {
 	public $database;
 	public $table;
 
