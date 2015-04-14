@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
-xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
-xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
-xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
-xmlns:tns="http://www.ipx.com/api/services/subscriptionapi31"
-xmlns:typens="http://www.ipx.com/api/services/subscriptionapi31/types"
-targetNamespace="http://www.ipx.com/api/services/subscriptionapi31">
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+    xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+    xmlns:tns="http://www.ipx.com/api/services/subscriptionapi31"
+    xmlns:typens="http://www.ipx.com/api/services/subscriptionapi31/types"
+    targetNamespace="http://www.ipx.com/api/services/subscriptionapi31">
 
   <types>
     <xsd:schema targetNamespace="http://www.ipx.com/api/services/subscriptionapi31/types"

@@ -31,32 +31,32 @@
 	</xsd:schema>
 </types>
 <message name="resolveOperatorRequest">
-<part name="request" element="typens:ResolveOperatorRequest"/>
+    <part name="request" element="typens:ResolveOperatorRequest"/>
 </message>
 <message name="resolveOperatorResponse">
-<part name="result" element="typens:ResolveOperatorResponse"/>
+    <part name="result" element="typens:ResolveOperatorResponse"/>
 </message>
 <portType name="ConsumerLookupApiPort">
-<operation name="resolveOperator">
-<input message="tns:resolveOperatorRequest"/>
-<output message="tns:resolveOperatorResponse"/>
-</operation>
+    <operation name="resolveOperator">
+        <input message="tns:resolveOperatorRequest"/>
+        <output message="tns:resolveOperatorResponse"/>
+    </operation>
 </portType>
 <binding name="ConsumerLookupApiBinding" type="tns:ConsumerLookupApiPort">
-<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-<operation name="resolveOperator">
-<soap:operation soapAction="tns:resolveOperator"/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-</operation>
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="resolveOperator">
+        <soap:operation soapAction="tns:resolveOperator"/>
+        <input>
+            <soap:body use="literal"/>
+        </input>
+        <output>
+            <soap:body use="literal"/>
+        </output>
+    </operation>
 </binding>
 <service name="ConsumerLookupApiService">
-<port name="ConsumerLookupApi09" binding="tns:ConsumerLookupApiBinding">
-<soap:address location="http://europe.ipx.com/api/services2/ConsumerLookupApi09"/>
+    <port name="ConsumerLookupApi09" binding="tns:ConsumerLookupApiBinding">
+    <soap:address location="http://europe.ipx.com/api/services2/ConsumerLookupApi09"/>
 </port>
 </service>
 </definitions>
